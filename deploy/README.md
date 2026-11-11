@@ -25,6 +25,7 @@ deploy/
 │   ├── voice.py              # 语音识别/合成（sherpa-onnx）
 │   ├── vkbd.py               # 可选后备键盘（--keyboard builtin）
 │   ├── style.css             # GTK CSS 主题
+│   ├── STYLE_CHANGES.md     # 样式改动说明
 │   └── run.sh                # 启动器：拉起服务 + 桌面用户/原生会话 + 全屏
 │
 ├── native/                   # 推理服务（C++）-> /data/rkllm-chat/native/
@@ -35,6 +36,10 @@ deploy/
 │   ├── stb_image.h           # 图片解码（单头文件库）
 │   ├── rkllm-service         # 已编译的 aarch64 二进制
 │   └── rkllm-service.bak     # 摄像头修复**之前**的基线二进制（非「上一版」，缺 ev=image 视觉 KV 刷新）
+│
+├── voice-vision/             # 免提语音后端 -> /data/voice-vision/
+│   ├── README.md             # 语音链路说明
+│   └── talk.py               # 免提对话进程（VAD + ASR + LLM + TTS 回环）
 │
 └── qwen35/                   # 板端辅助脚本 -> /data/rkllm_qwen35/
     ├── chat.sh               # 交互对话启动器（单图多轮）
@@ -174,14 +179,29 @@ librknnrt.so   a37ee1d5d664c79836bf6e35b7ef6289
 
 ```ini
 Environment=LD_LIBRARY_PATH=/data/rkllm_qwen35/lib
+Environment=LLM_DIR=/data/rkllm_qwen35
 ExecStart=/data/rkllm-chat/native/rkllm-service \
     --sock /run/rkllm-chat.sock \
     --llm    /data/rkllm_qwen35/Qwen3.5-0.8B-MIT_w4a16_rk3576.rkllm \
     --vision /data/rkllm_qwen35/Qwen3.5-0.8B-MIT_vision_rk3576.rknn \
-    --ctx 4096 --max-new 256 --cores 2
+    --ctx 4096 --max-new 256 --cores 2 \
+    --allow-uid 1001
 Restart=always
+RestartSec=3
 RuntimeDirectory=rkllm-chat
+RuntimeDirectoryMode=0775
+UMask=0027
+TimeoutStopSec=10
+KillMode=mixed
+
+[Install]
+WantedBy=multi-user.target
 ```
+
+> 上面是**完整** unit 内容，请直接以 `deploy/rkllm-chat.service` 为准。
+> 尤其不要漏掉 `--allow-uid`、`UMask=0027` 与 `[Install]` 段：前两者决定谁能
+> 连 socket（socket 为 `root:w 0660` + `SO_PEERCRED` 校验），漏掉 `[Install]` 会让
+> `systemctl enable` 静默失败。
 
 **切换回原版模型**：把 `ExecStart` 里的两个文件名改回
 `Qwen3.5-0.8B_w4a16_g128_rk3576.rkllm` / `Qwen3.5-0.8B_vision_rk3576.rknn`，
@@ -312,7 +332,7 @@ adb shell "systemctl restart rkllm-chat"
 |---|---|
 | 模型通用能力退化 | MIT 版是 weight-space edit，数学循环问题改善，但**通用知识明显变差**（勾股定理、地理常识会答错）。追求通用对话建议回滚原版。 |
 | thinking 未启用 | 服务硬编码 `enable_thinking=false`。该模型的核心收益需开 thinking + 32K 上下文才体现，但单题需 3–10 分钟，不适合交互。 |
-| 上下文仅 4096 | 博客评测用 32768。板端 `max_context_len` 上限 16384，当前 4096。 |
+| 上下文仅 4096 | 博客评测用 32768。板端 runtime 的 `max_context_len` 上限是 16384，但**当前 `.rkllm` 文件在转换时已固定为 4096**（见 `logs/02_rkllm.log`：`Setting max_context_limit to 4096`），改服务端 `--ctx` 无法突破，需重新转换模型。 |
 | 量化损伤 | W4A16 下 0.8B 数学能力损失大，实测 MATH-500 全错。 |
 | GUI 自动化测试受限 | mutter/Xwayland 拦截 Xtst 伪造键盘事件，无法脚本点击。验证建议走 socket 协议。 |
 | 截图 | `xwd -id <mutter-frame-id>` 可用；`xwd -root` 与 `ffmpeg -i :0` 全黑。 |
