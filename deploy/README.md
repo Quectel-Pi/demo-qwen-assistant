@@ -15,7 +15,7 @@
 deploy/
 ├── README.md                 # 本文件
 ├── DEPLOY.sh                 # 幂等部署脚本（支持 --dry-run）
-├── rkllm-chat.service        # systemd unit（推理服务开机自启）
+├── rkllm-chat.service        # systemd unit（注意：出厂为 disabled，需跑一次 DEPLOY.sh 或手动 enable）
 │
 ├── ui/rkchat/                # GTK3 前端 -> /data/rkllm-chat/ui/rkchat/
 │   ├── rkchat.py             # 主界面：对话气泡、摄像头、TTS、系统键盘
@@ -34,7 +34,7 @@ deploy/
 │   ├── rknn_api.h            # RKNN C API 头文件
 │   ├── stb_image.h           # 图片解码（单头文件库）
 │   ├── rkllm-service         # 已编译的 aarch64 二进制
-│   └── rkllm-service.bak     # 上一版二进制（回滚用）
+│   └── rkllm-service.bak     # 摄像头修复**之前**的基线二进制（非「上一版」，缺 ev=image 视觉 KV 刷新）
 │
 └── qwen35/                   # 板端辅助脚本 -> /data/rkllm_qwen35/
     ├── chat.sh               # 交互对话启动器（单图多轮）
@@ -281,8 +281,8 @@ cd deploy/native
 aarch64-linux-gnu-g++ -std=c++17 -O2 \
   -o rkllm-service rkllm_service.cpp \
   -I. \
-  -L../rknn-llm/rkllm-runtime/Linux/librkllm_api/aarch64 \
-  -L../rknn-llm/examples/multimodal_model_demo/deploy/3rdparty/librknnrt/Linux/librknn_api/aarch64 \
+  -L../../rknn-llm/rkllm-runtime/Linux/librkllm_api/aarch64 \
+  -L../../rknn-llm/examples/multimodal_model_demo/deploy/3rdparty/librknnrt/Linux/librknn_api/aarch64 \
   -lrkllmrt -lrknnrt -lpthread
 
 adb push rkllm-service /data/rkllm-chat/native/
@@ -292,6 +292,11 @@ adb shell "systemctl restart rkllm-chat"
 
 二进制只依赖 `librkllmrt.so`、`librknnrt.so`、`libstdc++`、`libm`、`libgcc_s`、`libc`，
 运行时通过 `LD_LIBRARY_PATH=/data/rkllm_qwen35/lib` 找到前两个。
+
+> 注意：上面这条命令**不写入 RUNPATH**，所以脱离 systemd 直接跑会报
+> `librkllmrt.so: not found`，必须自己带 `LD_LIBRARY_PATH`。仓库里的
+> `rkllm-service.bak` 是旧构建，带 `RUNPATH=/data/rkllm_qwen35/lib`，两者行为不同。
+> 需要可独立运行的二进制时加 `-Wl,-rpath,/data/rkllm_qwen35/lib`。
 
 ### 更完整的交叉编译环境
 

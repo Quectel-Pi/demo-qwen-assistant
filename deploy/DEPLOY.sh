@@ -34,7 +34,7 @@ for arg in "$@"; do
         --dry-run)      DRY_RUN=1 ;;
         --no-restart)   RESTART=0 ;;
         --build-native) BUILD_NATIVE=1 ;;
-        -h|--help)      sed -n '2,25p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        -h|--help)      sed -n '2,21p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
         *) echo "未知参数: $arg（--help 看用法）" >&2; exit 2 ;;
     esac
 done
