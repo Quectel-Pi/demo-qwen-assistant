@@ -18,6 +18,7 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <poll.h>
 #include <pthread.h>
 #include <signal.h>
 #include <stdarg.h>
@@ -631,10 +632,19 @@ static LlmEngine g_llm;
 static std::mutex g_infer_mutex;          // 同一时刻只跑一轮推理
 static std::atomic<bool> g_abort(false);
 static std::atomic<bool> g_quit(false);
+static std::atomic<int> g_clients(0);   // 活跃连接线程数，退出时等它们收尾
+static int g_wake_pipe[2] = {-1, -1};   // self-pipe：信号处理里 write 唤醒 accept()
 
 static void on_signal(int sig) {
     (void)sig;
     g_quit.store(true);
+    // accept()/recv() 被信号打断后是否重启由 SA_RESTART 决定；显式写 self-pipe
+    // 保证阻塞在 accept() 的主线程能被唤醒，而不是拖到 systemd TimeoutStopSec。
+    if (g_wake_pipe[1] >= 0) {
+        char c = 1;
+        ssize_t w = write(g_wake_pipe[1], &c, 1);
+        (void)w;
+    }
 }
 
 // 处理一条请求；返回 false 表示连接应关闭
@@ -769,6 +779,7 @@ static bool handle_request(int fd, const std::string &line) {
 
 static void *client_thread(void *arg) {
     int fd = (int)(intptr_t)arg;
+    g_clients.fetch_add(1);
     std::string buf;
     char chunk[8192];
     while (!g_quit.load()) {
@@ -785,11 +796,13 @@ static void *client_thread(void *arg) {
             if (line.empty()) continue;
             if (!handle_request(fd, line)) {
                 close(fd);
+                g_clients.fetch_sub(1);
                 return nullptr;
             }
         }
     }
     close(fd);
+    g_clients.fetch_sub(1);
     return nullptr;
 }
 
@@ -835,6 +848,12 @@ int main(int argc, char **argv) {
         else { fprintf(stderr, "未知参数: %s\n", a.c_str()); usage(argv[0]); return 2; }
     }
 
+    if (pipe(g_wake_pipe) < 0) {
+        fprintf(stderr, "创建唤醒管道失败: %s\n", strerror(errno));
+        return 1;
+    }
+    for (int i = 0; i < 2; ++i) fcntl(g_wake_pipe[i], F_SETFL, O_NONBLOCK);
+
     signal(SIGPIPE, SIG_IGN);
     signal(SIGINT, on_signal);
     signal(SIGTERM, on_signal);
@@ -876,6 +895,25 @@ int main(int argc, char **argv) {
     logf_("监听 %s", sock_path.c_str());
 
     while (!g_quit.load()) {
+        // poll 而非裸 accept：信号只写 self-pipe，让 poll 立即返回并看到 g_quit。
+        struct pollfd pfds[2];
+        pfds[0].fd = srv;
+        pfds[0].events = POLLIN;
+        pfds[1].fd = g_wake_pipe[0];
+        pfds[1].events = POLLIN;
+        int pr = poll(pfds, 2, -1);
+        if (pr < 0) {
+            if (errno == EINTR) continue;
+            logf_("poll 失败: %s", strerror(errno));
+            break;
+        }
+        if (g_quit.load()) break;
+        if (pfds[1].revents & POLLIN) {
+            char drain[64];
+            while (read(g_wake_pipe[0], drain, sizeof(drain)) > 0) {}
+            break;
+        }
+        if (!(pfds[0].revents & POLLIN)) continue;
         int fd = accept(srv, nullptr, nullptr);
         if (fd < 0) {
             if (errno == EINTR) continue;
@@ -891,9 +929,17 @@ int main(int argc, char **argv) {
     }
 
     close(srv);
+    // 先等所有连接线程退出，再释放引擎。否则仍在 rkllm_run() 里的线程
+    // 会回调到已析构的 handle_ / 栈上的 AskCtx，造成段错误。
+    for (int i = 0; i < 600 && g_clients.load() > 0; ++i) usleep(10000);  // 最多 6s
+    if (g_clients.load() > 0) {
+        logf_("仍有 %d 个连接线程未退出，强制收尾", g_clients.load());
+    }
     unlink(sock_path.c_str());
     g_llm.release();
     g_vision.release();
+    if (g_wake_pipe[0] >= 0) close(g_wake_pipe[0]);
+    if (g_wake_pipe[1] >= 0) close(g_wake_pipe[1]);
     logf_("已退出");
     return 0;
 }

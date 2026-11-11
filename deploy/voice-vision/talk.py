@@ -249,7 +249,9 @@ class Speaker:
                 input=pcm, check=True,
                 stdout=subprocess.DEVNULL, stderr=subprocess.PIPE,
             )
-        except OSError as exc:
+        except (OSError, subprocess.SubprocessError) as exc:
+            # aplay 返回非零时抛的是 CalledProcessError（SubprocessError 子类），
+            # 不是 OSError；漏接会让整个免提对话进程带 traceback 退出。
             log("ERR", f"播放失败: {exc}", "red")
         return time.monotonic() - t0
 
