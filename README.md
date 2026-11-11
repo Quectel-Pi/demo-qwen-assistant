@@ -276,6 +276,15 @@ Socket 协议（一行一个 JSON）：
 
 ## 许可与致谢
 
-- Qwen3.5-0.8B 权重与相关版权归其原作者所有，本项目仅做板端量化与部署工程。
-- Rockchip `rknn-llm` / `rknn-toolkit2` 遵循其官方许可。
+本项目（本仓库内的源码、脚本与文档）采用 **Apache License 2.0**，
+完整条款见 [`LICENSE`](LICENSE)。
+
+```
+Copyright 2026 Quectel Wireless Solutions Co., Ltd.
+Licensed under the Apache License, Version 2.0.
+```
+
+- Qwen3.5-0.8B 权重与相关版权归其原作者所有，**不在本许可证范围内**；
+  本项目仅做板端量化与部署工程。
+- Rockchip `rknn-llm` / `rknn-toolkit2` 遵循其官方许可，不在本许可证范围内。
 - `deploy/native/stb_image.h` 为公有领域（Public Domain）单头文件库。
