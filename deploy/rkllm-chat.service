@@ -1,0 +1,34 @@
+[Unit]
+Description=RKLLM Qwen3.5-0.8B multimodal inference service
+After=network.target
+# 模型常驻内存约 1.5GB，避免和桌面抢内存时被 OOM 杀掉
+Conflicts=shutdown.target
+
+[Service]
+Type=simple
+# 显式指定 rpath 用到的库目录，模型加载走 librkllmrt + librknnrt
+Environment=LD_LIBRARY_PATH=/data/rkllm_qwen35/lib
+Environment=LLM_DIR=/data/rkllm_qwen35
+ExecStart=/data/rkllm-chat/native/rkllm-service \
+    --sock /run/rkllm-chat.sock \
+    --llm /data/rkllm_qwen35/Qwen3.5-0.8B-MIT_w4a16_rk3576.rkllm \
+    --vision /data/rkllm_qwen35/Qwen3.5-0.8B-MIT_vision_rk3576.rknn \
+    --ctx 4096 --max-new 256 --cores 2 \
+    --allow-uid 1001
+Restart=always
+RestartSec=3
+# socket 放在 /run 下，需要可写
+RuntimeDirectory=rkllm-chat
+RuntimeDirectoryMode=0775
+# socket 权限：服务端以 --allow-uid 1001 运行，自己 chmod 0660 并做
+# SO_PEERCRED 校验（只允许 root 与桌面用户 w:1001）。这里不再给 UMask=0000，
+# 否则本机任何用户都能 {"cmd":"exit"} 抖动服务 / 用 kv、ask 读走对话。
+UMask=0027
+# 停止行为：服务收到 SIGTERM 后会 unlink socket 并等连接线程收尾（最多 6s），
+# 给足时间；KillMode=mixed 保证主进程先收到 SIGTERM（信号处理里写 self-pipe
+# 唤醒 poll），只在超时才 SIGKILL 整个 cgroup。
+TimeoutStopSec=10
+KillMode=mixed
+
+[Install]
+WantedBy=multi-user.target

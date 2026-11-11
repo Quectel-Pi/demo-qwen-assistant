@@ -1,0 +1,20 @@
+[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights:   0%|          | 0/473 [00:00<?, ?it/s]Loading weights:  44%|████▍     | 207/473 [00:00<00:00, 2044.71it/s]Loading weights: 100%|██████████| 473/473 [00:00<00:00, 2848.56it/s]
+Output shape: torch.Size([196, 1024])
+/home/leox/RKNN-MODEL/.venv310/lib/python3.10/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py:1082: TracerWarning: Converting a tensor to a Python list might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  grid_thw_list = grid_thw.tolist()
+/home/leox/RKNN-MODEL/.venv310/lib/python3.10/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py:1121: TracerWarning: Converting a tensor to a Python list might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  idx_list[i].extend(indices[i].tolist())
+/home/leox/RKNN-MODEL/.venv310/lib/python3.10/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py:1122: TracerWarning: Converting a tensor to a Python list might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  weight_list[i].extend(weights[i].tolist())
+/home/leox/RKNN-MODEL/.venv310/lib/python3.10/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py:1124: TracerWarning: torch.tensor results are registered as constants in the trace. You can safely ignore this warning if you use this function to create tensors out of constant variables that would be the same every time you call this function. In any other case, this might cause the trace to be incorrect.
+  idx_tensor = torch.tensor(idx_list, dtype=torch.long, device=device)
+/home/leox/RKNN-MODEL/.venv310/lib/python3.10/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py:1125: TracerWarning: torch.tensor results are registered as constants in the trace. You can safely ignore this warning if you use this function to create tensors out of constant variables that would be the same every time you call this function. In any other case, this might cause the trace to be incorrect.
+  weight_tensor = torch.tensor(weight_list, dtype=self.pos_embed.weight.dtype, device=device)
+/home/leox/RKNN-MODEL/.venv310/lib/python3.10/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py:1043: TracerWarning: Converting a tensor to a Python list might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  grid_thw_list = grid_thw.tolist()
+/home/leox/RKNN-MODEL/.venv310/lib/python3.10/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py:948: TracerWarning: Converting a tensor to a Python list might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  torch.split(tensor, lengths.tolist(), dim=2) for tensor in (query_states, key_states, value_states)
+/home/leox/RKNN-MODEL/rknn-llm/examples/multimodal_model_demo/export/export_vision.py:164: TracerWarning: Converting a tensor to a Python list might cause the trace to be incorrect. We can't record the data flow of Python values, so this value will be treated as a constant in the future. This means that the trace might not generalize to other inputs!
+  split_sizes = (grid_thw.prod(-1) // self.merge_size**2).tolist()
+Exported to ./onnx/qwen3.5_vision.onnx

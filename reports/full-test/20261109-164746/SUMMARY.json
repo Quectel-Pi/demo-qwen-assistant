@@ -1,0 +1,57 @@
+{
+  "records": 55,
+  "raw_counts": {
+    "PASS": 39,
+    "FAIL": 14,
+    "MANUAL": 2
+  },
+  "notes": [
+    "Raw counts mix transport, answer quality and test setup; not a model accuracy rate.",
+    "Initial keyboard check timed out before Chinese input; retry passed.",
+    "Initial stop check never sent abort because the answer was shorter than the trigger; retry passed.",
+    "Camera and speech PASS means transport/playback completed, not whole-answer semantic correctness."
+  ],
+  "text": {
+    "n": 27,
+    "ttft_median_ms": 520,
+    "wall_min_ms": 661,
+    "wall_max_ms": 3391
+  },
+  "vision": {
+    "n": 3,
+    "ttft_median_ms": 3645,
+    "wall_min_ms": 6182,
+    "wall_max_ms": 19483
+  },
+  "memory_min_sample_MiB": 1304.5,
+  "stability": {
+    "requests": 5,
+    "completed": 5,
+    "ui_RSS_MiB_samples": [
+      565.4,
+      565.4,
+      565.4,
+      565.4,
+      565.4
+    ]
+  },
+  "acoustic_asr": {
+    "expected": "你好，这是一段语音测试，一二三。",
+    "actual": "你好这是移顿语言测试 A 二三",
+    "normalization": "Remove punctuation/space and lowercase; do not map A to 一",
+    "character_errors": 4,
+    "reference_characters": 13,
+    "CER": 0.3076923076923077
+  },
+  "runtime_scope": {
+    "main_test_seconds": 216.8,
+    "followup_test_seconds": 53.60577595799987,
+    "not_covered": [
+      "24h soak",
+      "power-cycle recovery",
+      "network isolation",
+      "human hands-free dictation and voice interruption",
+      "subjective image truth/audibility"
+    ]
+  }
+}

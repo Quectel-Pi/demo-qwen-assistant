@@ -1,0 +1,52 @@
+[RESULT] native_ui PASS
+
+** (rkchat-suite.py:539518): WARNING **: 01:19:13.065: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:539518): WARNING **: 01:19:13.103: atk-bridge: get_device_events_reply: unknown signature
+
+** (rkchat-suite.py:539518): WARNING **: 01:19:13.104: atk-bridge: GetRegisteredEvents returned message with unknown signature
+
+** (rkchat-suite.py:539518): WARNING **: 01:19:13.125: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:539518): WARNING **: 01:19:13.148: atk-bridge: get_device_events_reply: unknown signature
+
+** (rkchat-suite.py:539518): WARNING **: 01:19:13.150: atk-bridge: GetRegisteredEvents returned message with unknown signature
+
+** (rkchat-suite.py:539518): WARNING **: 01:19:13.150: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:539518): WARNING **: 01:19:13.174: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:539518): WARNING **: 01:19:13.190: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:539518): WARNING **: 01:19:13.216: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:539518): WARNING **: 01:19:13.254: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:539518): WARNING **: 01:19:13.254: AT-SPI: Could not obtain desktop path or name
+
+[RESULT] cold_first_sentence PASS
+[RESULT] independent_mic_route PASS
+[RESULT] mute_suppresses_audio PASS
+[RESULT] rapid_round_no_tts_overlap PASS
+[RESULT] burst_no_drops_and_nonblocking_finish PASS
+[stream] 播放失败: injected output failure
+[RESULT] playback_failure_not_silent PASS
+[RESULT] request_error_cleans_audio PASS
+[RESULT] worker_status_runs_on_gtk_thread PASS
+[RESULT] cancel_mic_discards_partial_input PASS
+[RESULT] actual_abort_recovers PASS
+[RESULT] request_after_abort_completes PASS
+[RESULT] twenty_reconnects_no_old_receivers PASS
+[RESULT] ui_after_reconnect_completes PASS
+[RESULT] real_mic_pcm_ready PASS
+[RESULT] camera_plus_reading PASS
+[COMPLETE]
+
+(rkchat-suite.py:539518): Gtk-CRITICAL **: 01:20:17.660: gtk_main_quit: assertion 'main_loops != NULL' failed

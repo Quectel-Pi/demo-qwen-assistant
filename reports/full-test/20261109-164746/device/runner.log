@@ -1,0 +1,85 @@
+[START] {"uid": 1001, "backend": "GdkWaylandDisplay", "builtin_keyboard": false, "resource": {"MemTotal_MiB": 3900.4, "MemAvailable_MiB": 1830.8, "load1": 1.97119140625, "ui_RSS_MiB": 70.1}}
+[RESULT] native_system_keyboard PASS Native Wayland; no application keyboard object constructed
+[READY_FOR_KEYBOARD]
+
+** (rkchat-suite.py:470787): WARNING **: 00:24:43.135: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:470787): WARNING **: 00:24:43.179: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:470787): WARNING **: 00:24:43.179: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:470787): WARNING **: 00:24:43.179: atk-bridge: get_device_events_reply: unknown signature
+
+** (rkchat-suite.py:470787): WARNING **: 00:24:43.179: atk-bridge: GetRegisteredEvents returned message with unknown signature
+
+** (rkchat-suite.py:470787): WARNING **: 00:24:43.212: atk-bridge: get_device_events_reply: unknown signature
+
+** (rkchat-suite.py:470787): WARNING **: 00:24:43.213: atk-bridge: GetRegisteredEvents returned message with unknown signature
+
+** (rkchat-suite.py:470787): WARNING **: 00:24:43.213: atk-bridge: get_device_events_reply: unknown signature
+
+** (rkchat-suite.py:470787): WARNING **: 00:24:43.215: atk-bridge: GetRegisteredEvents returned message with unknown signature
+
+** (rkchat-suite.py:470787): WARNING **: 00:24:43.233: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:470787): WARNING **: 00:24:43.259: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:470787): WARNING **: 00:24:43.285: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:470787): WARNING **: 00:24:43.308: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:470787): WARNING **: 00:24:43.308: AT-SPI: Could not obtain desktop path or name
+
+[RESULT] physical_keyboard_input FAIL Kernel input events reached actual GtkEntry (English and Chinese)
+[RESULT] speech_engine_ready PASS Real ASR/TTS/VAD preload status
+[RESULT] greeting PASS UI send/stream/done chain completed
+[RESULT] comfort PASS UI send/stream/done chain completed
+[RESULT] joke PASS UI send/stream/done chain completed
+[RESULT] capabilities FAIL No unrelated safety refusal expected
+[RESULT] fact_beijing PASS Expected exact output: 北京
+[RESULT] multiply FAIL Expected exact output: 156
+[RESULT] simple_word_math FAIL Expected exact output: 5
+[RESULT] instruction_ok PASS Expected exact output: OK
+[RESULT] instruction_json PASS Valid JSON with exact requested fields
+[RESULT] translation PASS Expected Good morning
+[RESULT] python_add PASS Pure add function passed 3 deterministic checks
+[RESULT] long_answer PASS UI send/stream/done chain completed
+[RESULT] label_bounds PASS Actual wrapped label allocation vs Pango layout
+[RESULT] remember_name PASS UI send/stream/done chain completed
+[RESULT] recall_name FAIL Expected to mention: 小林
+[RESULT] recall_hobby PASS Expected to mention: 骑行
+[RESULT] after_clear PASS Cleared context must not retain previous name
+[RESULT] camera_preview PASS Live frame sequence increases on /dev/video73
+[RESULT] live_describe PASS UI send/stream/done chain completed
+[RESULT] live_followup PASS UI send/stream/done chain completed
+[RESULT] static_image PASS Expected to mention: 宇航
+[RESULT] static_color_followup PASS Expected to mention: 绿
+[RESULT] missing_image PASS UI send/stream/done chain completed
+[RESULT] empty_prompt PASS Actual protocol response
+[RESULT] unknown_command PASS Actual protocol response
+[RESULT] stop_generation FAIL Abort did not complete as expected
+[RESULT] after_stop FAIL Expected to mention: 恢复成功
+[RESULT] client_reconnect PASS Reconnect only the UI socket; inference service was not restarted
+[RESULT] after_reconnect FAIL Expected exact output: pong
+[RESULT] tts_synthesis PASS Real synthesized waveform; physical audibility requires listening
+[RESULT] tts_asr_roundtrip PASS Digital TTS-to-ASR test, not acoustic microphone recognition
+[RESULT] mic_capture PASS Real microphone device read; no claim about ambient speech accuracy
+[RESULT] ui_auto_speech PASS UI send/stream/done chain completed
+[RESULT] camera_and_speech PASS UI send/stream/done chain completed
+[RESULT] repeat_0 FAIL Expected exact output: 测试成功
+[RESULT] repeat_1 FAIL Expected exact output: 测试成功
+[RESULT] repeat_2 FAIL Expected exact output: 测试成功
+[RESULT] repeat_3 FAIL Expected exact output: 测试成功
+[RESULT] repeat_4 FAIL Expected exact output: 测试成功
+[RESULT] manual_visual_accuracy MANUAL Compare saved live frame and description; unknown live scene prevents automatic truth grading
+[RESULT] manual_audio_audibility MANUAL Playback completion/waveform do not prove loudspeaker is audible at the filming position
+[COMPLETE] {"PASS": 29, "FAIL": 13, "MANUAL": 2}
+
+(rkchat-suite.py:470787): Gtk-CRITICAL **: 00:28:20.371: gtk_main_quit: assertion 'main_loops != NULL' failed

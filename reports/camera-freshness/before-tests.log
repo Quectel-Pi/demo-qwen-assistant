@@ -1,0 +1,87 @@
+test_closed_camera_epoch_cannot_supply_a_photo (test_camera_requests.FrameTests) ... ERROR
+test_snapshot_waits_for_a_newer_frame (test_camera_requests.FrameTests) ... ERROR
+test_stalled_frame_is_not_used_as_new_photo (test_camera_requests.FrameTests) ... FAIL
+test_busy_request_is_not_overwritten_by_new_snapshot (test_camera_requests.UiCameraTests) ... FAIL
+test_close_camera_stays_enabled_during_inference (test_camera_requests.UiCameraTests) ... FAIL
+test_new_photo_does_not_replay_old_visual_transcript (test_camera_requests.UiCameraTests) ... FAIL
+test_open_camera_is_blocked_while_busy (test_camera_requests.UiCameraTests) ... FAIL
+
+======================================================================
+ERROR: test_closed_camera_epoch_cannot_supply_a_photo (test_camera_requests.FrameTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/leox/RKNN-MODEL/tests/test_camera_requests.py", line 51, in test_closed_camera_epoch_cannot_supply_a_photo
+    self.assertIsNone(s.fresh_snapshot(str(Path(tmp)/'old-session.bmp'),epoch=1))
+AttributeError: 'PreviewStream' object has no attribute 'fresh_snapshot'
+
+======================================================================
+ERROR: test_snapshot_waits_for_a_newer_frame (test_camera_requests.FrameTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/leox/RKNN-MODEL/tests/test_camera_requests.py", line 42, in test_snapshot_waits_for_a_newer_frame
+    result=s.fresh_snapshot(str(Path(tmp)/'fresh.bmp'),min_seq=10,epoch=2,timeout=0.5)
+AttributeError: 'PreviewStream' object has no attribute 'fresh_snapshot'
+
+======================================================================
+FAIL: test_stalled_frame_is_not_used_as_new_photo (test_camera_requests.FrameTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/leox/RKNN-MODEL/tests/test_camera_requests.py", line 30, in test_stalled_frame_is_not_used_as_new_photo
+    self.assertFalse(s.snapshot(str(Path(tmp)/'stale.bmp')))
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_busy_request_is_not_overwritten_by_new_snapshot (test_camera_requests.UiCameraTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/leox/RKNN-MODEL/tests/test_camera_requests.py", line 70, in test_busy_request_is_not_overwritten_by_new_snapshot
+    a._start_ask.assert_not_called()
+  File "/usr/lib/python3.10/unittest/mock.py", line 890, in assert_not_called
+    raise AssertionError(msg)
+AssertionError: Expected 'mock' to not have been called. Called 1 times.
+Calls: [call('又一轮问题', '/tmp/rkchat_cam.bmp')].
+
+======================================================================
+FAIL: test_close_camera_stays_enabled_during_inference (test_camera_requests.UiCameraTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/leox/RKNN-MODEL/tests/test_camera_requests.py", line 66, in test_close_camera_stays_enabled_during_inference
+    a.btn_cam.set_sensitive.assert_called_with(True)
+  File "/usr/lib/python3.10/unittest/mock.py", line 929, in assert_called_with
+    raise AssertionError(_error_message()) from cause
+AssertionError: expected call not found.
+Expected: set_sensitive(True)
+Actual: set_sensitive(False)
+
+======================================================================
+FAIL: test_new_photo_does_not_replay_old_visual_transcript (test_camera_requests.UiCameraTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/leox/RKNN-MODEL/tests/test_camera_requests.py", line 86, in test_new_photo_does_not_replay_old_visual_transcript
+    self.assertNotIn('OLD_VISUAL_TRANSCRIPT',sent)
+AssertionError: 'OLD_VISUAL_TRANSCRIPT' unexpectedly found in 'OLD_VISUAL_TRANSCRIPT\n<image>现在看到了什么？'
+
+======================================================================
+FAIL: test_open_camera_is_blocked_while_busy (test_camera_requests.UiCameraTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/leox/RKNN-MODEL/tests/test_camera_requests.py", line 77, in test_open_camera_is_blocked_while_busy
+    a.cam.start.assert_not_called()
+  File "/usr/lib/python3.10/unittest/mock.py", line 890, in assert_not_called
+    raise AssertionError(msg)
+AssertionError: Expected 'start' to not have been called. Called 1 times.
+Calls: [call()].
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.008s
+
+FAILED (failures=5, errors=2)
+Exception in thread Thread-1 (publish):
+Traceback (most recent call last):
+  File "/usr/lib/python3.10/threading.py", line 1016, in _bootstrap_inner
+    self.run()
+  File "/usr/lib/python3.10/threading.py", line 953, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/leox/RKNN-MODEL/tests/test_camera_requests.py", line 36, in publish
+    with s._frame_ready:
+AttributeError: 'PreviewStream' object has no attribute '_frame_ready'

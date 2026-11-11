@@ -1,0 +1,16 @@
+{"id": "native_ui", "status": "PASS", "seconds": 0.22, "backend": "GdkWaylandDisplay", "builtin_keyboard": false, "uid": 1001}
+{"id": "cold_first_sentence", "status": "PASS", "seconds": 12.67, "engine_was_loading": true, "spoken": true, "wall_ms": 783}
+{"id": "independent_mic_route", "status": "PASS", "seconds": 12.67, "mic": "plughw:CARD=U1080P,DEV=0", "speaker": "hw:0,0"}
+{"id": "mute_suppresses_audio", "status": "PASS", "seconds": 14.13, "new_tts_calls": 0}
+{"id": "rapid_round_no_tts_overlap", "status": "PASS", "seconds": 19.0, "peak_synthesis_calls": 1, "new_round_spoken": true}
+{"id": "burst_no_drops_and_nonblocking_finish", "status": "PASS", "seconds": 37.27, "fed": 16, "synthesized": 16, "played": 16, "finish_ms": 0.010284002200933173}
+{"id": "playback_failure_not_silent", "status": "PASS", "seconds": 38.03, "states": ["播放失败: injected output failure"]}
+{"id": "request_error_cleans_audio", "status": "PASS", "seconds": 38.4}
+{"id": "worker_status_runs_on_gtk_thread", "status": "PASS", "seconds": 38.61, "thread_ids": [548161199008]}
+{"id": "cancel_mic_discards_partial_input", "status": "PASS", "seconds": 39.51}
+{"id": "actual_abort_recovers", "status": "PASS", "seconds": 40.47, "done": {"ev": "done", "aborted": 1, "ttft": 551, "tokens": 3, "ctx": "reset"}}
+{"id": "request_after_abort_completes", "status": "PASS", "seconds": 41.31, "answer": "北京", "wall_ms": 627}
+{"id": "twenty_reconnects_no_old_receivers", "status": "PASS", "seconds": 42.1, "successful": 20, "active_receivers": 1}
+{"id": "ui_after_reconnect_completes", "status": "PASS", "seconds": 42.98, "wall_ms": 667}
+{"id": "real_mic_pcm_ready", "status": "PASS", "seconds": 44.03, "ready_ms": 1048}
+{"id": "camera_plus_reading", "status": "PASS", "seconds": 69.62, "camera_running": true, "spoken": true, "wall_ms": 23040}

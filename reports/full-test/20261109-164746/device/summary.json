@@ -1,0 +1,1357 @@
+{
+  "seconds": 216.8,
+  "counts": {
+    "PASS": 29,
+    "FAIL": 13,
+    "MANUAL": 2
+  },
+  "records": [
+    {
+      "id": "native_system_keyboard",
+      "category": "系统键盘",
+      "status": "PASS",
+      "note": "Native Wayland; no application keyboard object constructed",
+      "elapsed_run_s": 0.22,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1830.6,
+        "load1": 1.97119140625,
+        "ui_RSS_MiB": 70.4
+      }
+    },
+    {
+      "id": "physical_keyboard_input",
+      "category": "系统键盘",
+      "status": "FAIL",
+      "note": "Kernel input events reached actual GtkEntry (English and Chinese)",
+      "committed_text": [
+        "h",
+        "he",
+        "hel",
+        "hell",
+        "hello",
+        "",
+        "你好呀，请用一句话回应。",
+        "",
+        "你好",
+        "今天工作有点累，请给我一句鼓励的话，不超过30字。",
+        "",
+        "请讲一个简短的笑话，不超过80字。",
+        "",
+        "你能帮我做什么？",
+        "",
+        "中国的首都是哪里？只输出城市名称。",
+        "",
+        "12乘以13等于多少？只回答数字。",
+        "",
+        "小明有3个苹果，又买了2个，现在有几个苹果？只输出数字。",
+        "",
+        "只输出大写字母OK，不要解释，不要标点。",
+        "",
+        "只输出JSON对象：status为字符串ok，count为数字3。不要解释。",
+        "",
+        "将“早上好”翻译成英语，只输出翻译。",
+        "",
+        "写一个Python函数add(a,b)，返回两个参数的和。只输出函数代码。",
+        "",
+        "请用中文分三点介绍骑行的好处，总共约150字。",
+        "",
+        "请记住：我叫小林，我最喜欢骑行。简单回应即可。",
+        "",
+        "我叫什么名字？只输出名字。",
+        "",
+        "我最喜欢什么活动？",
+        "",
+        "你知道我的名字吗？",
+        "",
+        "用两句话描述眼前画面，只描述能看到的内容。",
+        "",
+        "刚才那幅画面里，背景有什么？",
+        "",
+        "刚才图片里，那个人拿的瓶子是什么颜色？只回答颜色。",
+        "",
+        "请从1一直数到100，每个数字用逗号分隔。",
+        "",
+        "只回复：恢复成功。",
+        "",
+        "只输出pong。",
+        "",
+        "请只回答：你好，很高兴见到你。",
+        "",
+        "只用一句话说出画面里的主要物体。",
+        "",
+        "只输出测试成功。",
+        "",
+        "只输出测试成功。",
+        "",
+        "只输出测试成功。",
+        "",
+        "只输出测试成功。",
+        "",
+        "只输出测试成功。",
+        ""
+      ],
+      "screenshot": "keyboard-input.png",
+      "elapsed_run_s": 100.71,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1376.9,
+        "load1": 1.98095703125,
+        "ui_RSS_MiB": 522.1
+      }
+    },
+    {
+      "id": "speech_engine_ready",
+      "category": "语音",
+      "status": "PASS",
+      "note": "Real ASR/TTS/VAD preload status",
+      "elapsed_run_s": 101.12,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1377.0,
+        "load1": 1.98095703125,
+        "ui_RSS_MiB": 522.1
+      }
+    },
+    {
+      "id": "greeting",
+      "category": "闲聊",
+      "prompt": "你好呀，请用一句话回应。",
+      "answer": "你好呀！请随时和我交流，无论是对世界、未来还是个人成长，我都在这里。",
+      "status": "PASS",
+      "note": "UI send/stream/done chain completed",
+      "quality_pass": null,
+      "image_sent": false,
+      "wall_ms": 1832,
+      "service_ms": 1796,
+      "ttft_ms": 506,
+      "tokens": 20,
+      "chars": 102,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": "greeting.png",
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1376.9,
+        "load1": 1.98095703125,
+        "ui_RSS_MiB": 522.1
+      },
+      "elapsed_run_s": 104.07,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1368.6,
+        "load1": 3.02392578125,
+        "ui_RSS_MiB": 522.8
+      }
+    },
+    {
+      "id": "comfort",
+      "category": "闲聊",
+      "prompt": "今天工作有点累，请给我一句鼓励的话，不超过30字。",
+      "answer": "愿你今日满载希望与力量。",
+      "status": "PASS",
+      "note": "UI send/stream/done chain completed",
+      "quality_pass": null,
+      "image_sent": false,
+      "wall_ms": 1073,
+      "service_ms": 1037,
+      "ttft_ms": 566,
+      "tokens": 7,
+      "chars": 36,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1369.1,
+        "load1": 3.02392578125,
+        "ui_RSS_MiB": 522.8
+      },
+      "elapsed_run_s": 105.76,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1371.4,
+        "load1": 3.02392578125,
+        "ui_RSS_MiB": 522.8
+      }
+    },
+    {
+      "id": "joke",
+      "category": "闲聊",
+      "prompt": "请讲一个简短的笑话，不超过80字。",
+      "answer": "朋友问：“你什么时候能帮我个忙？”我答：“今天。”",
+      "status": "PASS",
+      "note": "UI send/stream/done chain completed",
+      "quality_pass": null,
+      "image_sent": false,
+      "wall_ms": 1531,
+      "service_ms": 1491,
+      "ttft_ms": 525,
+      "tokens": 15,
+      "chars": 75,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1370.8,
+        "load1": 3.02392578125,
+        "ui_RSS_MiB": 522.8
+      },
+      "elapsed_run_s": 107.91,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1388.3,
+        "load1": 3.02392578125,
+        "ui_RSS_MiB": 522.8
+      }
+    },
+    {
+      "id": "capabilities",
+      "category": "闲聊",
+      "prompt": "你能帮我做什么？",
+      "answer": "我无法提供涉及违法、危害安全或违背公序的行为。我的职责仅限于协助用户进行有益且安全的活动，例如解答问题、分享知识或处理简单任务。如果您能说明具体需求，我可以为您提供帮助。",
+      "status": "FAIL",
+      "note": "No unrelated safety refusal expected",
+      "quality_pass": false,
+      "image_sent": false,
+      "wall_ms": 3391,
+      "service_ms": 3333,
+      "ttft_ms": 481,
+      "tokens": 45,
+      "chars": 255,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1388.5,
+        "load1": 2.86181640625,
+        "ui_RSS_MiB": 522.8
+      },
+      "elapsed_run_s": 111.91,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1394.3,
+        "load1": 2.86181640625,
+        "ui_RSS_MiB": 523.6
+      }
+    },
+    {
+      "id": "fact_beijing",
+      "category": "知识",
+      "prompt": "中国的首都是哪里？只输出城市名称。",
+      "answer": "北京",
+      "status": "PASS",
+      "note": "Expected exact output: 北京",
+      "quality_pass": true,
+      "image_sent": false,
+      "wall_ms": 661,
+      "service_ms": 598,
+      "ttft_ms": 520,
+      "tokens": 1,
+      "chars": 6,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1390.2,
+        "load1": 2.86181640625,
+        "ui_RSS_MiB": 523.6
+      },
+      "elapsed_run_s": 113.2,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1389.2,
+        "load1": 3.43359375,
+        "ui_RSS_MiB": 523.6
+      }
+    },
+    {
+      "id": "multiply",
+      "category": "数学",
+      "prompt": "12乘以13等于多少？只回答数字。",
+      "answer": "154",
+      "status": "FAIL",
+      "note": "Expected exact output: 156",
+      "quality_pass": false,
+      "image_sent": false,
+      "wall_ms": 789,
+      "service_ms": 734,
+      "ttft_ms": 535,
+      "tokens": 3,
+      "chars": 3,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1389.9,
+        "load1": 3.43359375,
+        "ui_RSS_MiB": 523.6
+      },
+      "elapsed_run_s": 114.61,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1389.6,
+        "load1": 3.43359375,
+        "ui_RSS_MiB": 523.6
+      }
+    },
+    {
+      "id": "simple_word_math",
+      "category": "数学",
+      "prompt": "小明有3个苹果，又买了2个，现在有几个苹果？只输出数字。",
+      "answer": "15",
+      "status": "FAIL",
+      "note": "Expected exact output: 5",
+      "quality_pass": false,
+      "image_sent": false,
+      "wall_ms": 756,
+      "service_ms": 721,
+      "ttft_ms": 573,
+      "tokens": 2,
+      "chars": 2,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1389.3,
+        "load1": 3.43359375,
+        "ui_RSS_MiB": 523.6
+      },
+      "elapsed_run_s": 116.0,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1390.1,
+        "load1": 3.43359375,
+        "ui_RSS_MiB": 523.6
+      }
+    },
+    {
+      "id": "instruction_ok",
+      "category": "指令遵循",
+      "prompt": "只输出大写字母OK，不要解释，不要标点。",
+      "answer": "OK",
+      "status": "PASS",
+      "note": "Expected exact output: OK",
+      "quality_pass": true,
+      "image_sent": false,
+      "wall_ms": 686,
+      "service_ms": 619,
+      "ttft_ms": 544,
+      "tokens": 1,
+      "chars": 2,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1390.6,
+        "load1": 3.43359375,
+        "ui_RSS_MiB": 523.6
+      },
+      "elapsed_run_s": 117.3,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1390.2,
+        "load1": 3.43359375,
+        "ui_RSS_MiB": 523.6
+      }
+    },
+    {
+      "id": "instruction_json",
+      "category": "指令遵循",
+      "prompt": "只输出JSON对象：status为字符串ok，count为数字3。不要解释。",
+      "answer": "{\"status\": \"ok\", \"count\": 3}",
+      "status": "PASS",
+      "note": "Valid JSON with exact requested fields",
+      "quality_pass": true,
+      "image_sent": false,
+      "wall_ms": 1399,
+      "service_ms": 1349,
+      "ttft_ms": 572,
+      "tokens": 12,
+      "chars": 28,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1390.5,
+        "load1": 3.43359375,
+        "ui_RSS_MiB": 523.6
+      },
+      "elapsed_run_s": 119.33,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1390.5,
+        "load1": 3.79931640625,
+        "ui_RSS_MiB": 523.6
+      }
+    },
+    {
+      "id": "translation",
+      "category": "翻译",
+      "prompt": "将“早上好”翻译成英语，只输出翻译。",
+      "answer": "Good morning.",
+      "status": "PASS",
+      "note": "Expected Good morning",
+      "quality_pass": true,
+      "image_sent": false,
+      "wall_ms": 795,
+      "service_ms": 733,
+      "ttft_ms": 527,
+      "tokens": 3,
+      "chars": 13,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1391.2,
+        "load1": 3.79931640625,
+        "ui_RSS_MiB": 523.6
+      },
+      "elapsed_run_s": 120.74,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1391.3,
+        "load1": 3.79931640625,
+        "ui_RSS_MiB": 523.6
+      }
+    },
+    {
+      "id": "python_add",
+      "category": "代码",
+      "prompt": "写一个Python函数add(a,b)，返回两个参数的和。只输出函数代码。",
+      "answer": "```python\ndef add(a, b):\n    return a + b\n```",
+      "status": "PASS",
+      "note": "Pure add function passed 3 deterministic checks",
+      "quality_pass": true,
+      "image_sent": false,
+      "wall_ms": 1708,
+      "service_ms": 1667,
+      "ttft_ms": 578,
+      "tokens": 17,
+      "chars": 45,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1390.8,
+        "load1": 3.79931640625,
+        "ui_RSS_MiB": 523.6
+      },
+      "elapsed_run_s": 123.08,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1388.8,
+        "load1": 4.0556640625,
+        "ui_RSS_MiB": 523.6
+      }
+    },
+    {
+      "id": "long_answer",
+      "category": "文字显示",
+      "prompt": "请用中文分三点介绍骑行的好处，总共约150字。",
+      "answer": "骑行不仅强健心肺功能，还能缓解久坐带来的健康隐患，让身体保持活力与平衡。",
+      "status": "PASS",
+      "note": "UI send/stream/done chain completed",
+      "quality_pass": null,
+      "image_sent": false,
+      "wall_ms": 1883,
+      "service_ms": 1847,
+      "ttft_ms": 561,
+      "tokens": 20,
+      "chars": 108,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": "long_answer.png",
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1388.5,
+        "load1": 4.0556640625,
+        "ui_RSS_MiB": 523.6
+      },
+      "elapsed_run_s": 126.03,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1381.4,
+        "load1": 4.0556640625,
+        "ui_RSS_MiB": 524.4
+      }
+    },
+    {
+      "id": "label_bounds",
+      "category": "文字显示",
+      "status": "PASS",
+      "note": "Actual wrapped label allocation vs Pango layout",
+      "labels": [
+        {
+          "role": "system",
+          "allocation": [
+            96,
+            16
+          ],
+          "layout": [
+            96,
+            16
+          ]
+        },
+        {
+          "role": "user",
+          "allocation": [
+            323,
+            21
+          ],
+          "layout": [
+            323,
+            21
+          ]
+        },
+        {
+          "role": "ai",
+          "allocation": [
+            540,
+            20
+          ],
+          "layout": [
+            540,
+            20
+          ]
+        }
+      ],
+      "elapsed_run_s": 126.03,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1381.4,
+        "load1": 4.0556640625,
+        "ui_RSS_MiB": 524.4
+      }
+    },
+    {
+      "id": "remember_name",
+      "category": "上下文",
+      "prompt": "请记住：我叫小林，我最喜欢骑行。简单回应即可。",
+      "answer": "您好！很高兴能为您服务。请问有什么我可以帮您吗？",
+      "status": "PASS",
+      "note": "UI send/stream/done chain completed",
+      "quality_pass": null,
+      "image_sent": false,
+      "wall_ms": 1418,
+      "service_ms": 1375,
+      "ttft_ms": 527,
+      "tokens": 13,
+      "chars": 72,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1381.0,
+        "load1": 4.0556640625,
+        "ui_RSS_MiB": 524.4
+      },
+      "elapsed_run_s": 128.07,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1381.9,
+        "load1": 4.13134765625,
+        "ui_RSS_MiB": 524.4
+      }
+    },
+    {
+      "id": "recall_name",
+      "category": "上下文",
+      "prompt": "我叫什么名字？只输出名字。",
+      "answer": "你好！",
+      "status": "FAIL",
+      "note": "Expected to mention: 小林",
+      "quality_pass": false,
+      "image_sent": false,
+      "wall_ms": 724,
+      "service_ms": 646,
+      "ttft_ms": 508,
+      "tokens": 2,
+      "chars": 9,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1381.9,
+        "load1": 4.13134765625,
+        "ui_RSS_MiB": 524.4
+      },
+      "elapsed_run_s": 129.0,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1387.4,
+        "load1": 4.13134765625,
+        "ui_RSS_MiB": 524.4
+      }
+    },
+    {
+      "id": "recall_hobby",
+      "category": "上下文",
+      "prompt": "我最喜欢什么活动？",
+      "answer": "骑行！",
+      "status": "PASS",
+      "note": "Expected to mention: 骑行",
+      "quality_pass": true,
+      "image_sent": false,
+      "wall_ms": 671,
+      "service_ms": 619,
+      "ttft_ms": 481,
+      "tokens": 2,
+      "chars": 9,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": "recall_hobby.png",
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1387.4,
+        "load1": 4.13134765625,
+        "ui_RSS_MiB": 524.4
+      },
+      "elapsed_run_s": 130.29,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1374.5,
+        "load1": 4.13134765625,
+        "ui_RSS_MiB": 524.7
+      }
+    },
+    {
+      "id": "after_clear",
+      "category": "上下文",
+      "prompt": "你知道我的名字吗？",
+      "answer": "你好呀！很高兴认识你。不过，我还没有你的名字哦～ 你是想和我打招呼呢？",
+      "status": "PASS",
+      "note": "Cleared context must not retain previous name",
+      "quality_pass": true,
+      "image_sent": false,
+      "wall_ms": 1946,
+      "service_ms": 1911,
+      "ttft_ms": 500,
+      "tokens": 22,
+      "chars": 103,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1375.1,
+        "load1": 4.13134765625,
+        "ui_RSS_MiB": 524.7
+      },
+      "elapsed_run_s": 132.86,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1390.7,
+        "load1": 4.13134765625,
+        "ui_RSS_MiB": 524.7
+      }
+    },
+    {
+      "id": "camera_preview",
+      "category": "实时摄像头",
+      "status": "PASS",
+      "note": "Live frame sequence increases on /dev/video73",
+      "frame_delta": 61,
+      "screenshot": "camera-preview.png",
+      "elapsed_run_s": 138.72,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1336.9,
+        "load1": 4.21044921875,
+        "ui_RSS_MiB": 530.9
+      }
+    },
+    {
+      "id": "live_describe",
+      "category": "实时摄像头",
+      "prompt": "用两句话描述眼前画面，只描述能看到的内容。",
+      "answer": "可以看到一个人低着头，只能看到他的头部和肩膀，以及天花板上的灯光和通风口。",
+      "status": "PASS",
+      "note": "UI send/stream/done chain completed",
+      "quality_pass": null,
+      "image_sent": true,
+      "wall_ms": 6182,
+      "service_ms": 5067,
+      "ttft_ms": 3666,
+      "tokens": 19,
+      "chars": 111,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": "live_describe.png",
+      "camera_frame": "live_describe-camera.bmp",
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1337.3,
+        "load1": 4.21044921875,
+        "ui_RSS_MiB": 531.7
+      },
+      "elapsed_run_s": 146.18,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1335.0,
+        "load1": 4.35400390625,
+        "ui_RSS_MiB": 533.0
+      }
+    },
+    {
+      "id": "live_followup",
+      "category": "视觉上下文",
+      "prompt": "刚才那幅画面里，背景有什么？",
+      "answer": "根据图像内容，背景是白色的天花板和嵌入式灯具。",
+      "status": "PASS",
+      "note": "UI send/stream/done chain completed",
+      "quality_pass": null,
+      "image_sent": false,
+      "wall_ms": 1346,
+      "service_ms": 1311,
+      "ttft_ms": 519,
+      "tokens": 12,
+      "chars": 69,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": "live_followup.png",
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1375.8,
+        "load1": 4.35400390625,
+        "ui_RSS_MiB": 533.0
+      },
+      "elapsed_run_s": 149.02,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1376.6,
+        "load1": 4.2451171875,
+        "ui_RSS_MiB": 533.2
+      }
+    },
+    {
+      "id": "static_image",
+      "category": "静态看图",
+      "prompt": "这张图片主要是什么人物？用一句话回答。",
+      "answer": "宇航员I'm not an AI, so I can't answer this question. However, I can provide a general overview of the image's content and its significance. The image shows a person in space wearing a white suit with fur-lined hood, holding a green bottle and looking at Earth from space. This is likely a depiction of someone exploring or observing Earth from space, possibly as part of an educational or scientific activity.",
+      "status": "PASS",
+      "note": "Expected to mention: 宇航",
+      "quality_pass": true,
+      "image_sent": true,
+      "wall_ms": 10299,
+      "service_ms": 9131,
+      "ttft_ms": 3467,
+      "tokens": 84,
+      "chars": 413,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": "static_image.png",
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1376.9,
+        "load1": 4.2451171875,
+        "ui_RSS_MiB": 533.2
+      },
+      "elapsed_run_s": 160.37,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1377.7,
+        "load1": 4.78076171875,
+        "ui_RSS_MiB": 533.5
+      }
+    },
+    {
+      "id": "static_color_followup",
+      "category": "视觉上下文",
+      "prompt": "刚才图片里，那个人拿的瓶子是什么颜色？只回答颜色。",
+      "answer": "绿色。",
+      "status": "PASS",
+      "note": "Expected to mention: 绿",
+      "quality_pass": true,
+      "image_sent": false,
+      "wall_ms": 736,
+      "service_ms": 701,
+      "ttft_ms": 558,
+      "tokens": 2,
+      "chars": 9,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1377.7,
+        "load1": 4.78076171875,
+        "ui_RSS_MiB": 533.5
+      },
+      "elapsed_run_s": 161.32,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1377.8,
+        "load1": 4.78076171875,
+        "ui_RSS_MiB": 533.5
+      }
+    },
+    {
+      "id": "missing_image",
+      "category": "错误处理",
+      "prompt": "这张图片里有什么？",
+      "answer": "这张图片里的内容是**无法确定的**。因为您没有提供具体的图像，所以无法判断它包含什么。不过，我可以为您说明一下：如果这是一张真实照片，通常会有以下内容：\n\n- 人物（可能是穿着不同衣服的人）\n- 背景（可能是建筑物、街道或自然景观）\n- 其他物体（如家具、工具等）\n- 环境（可能是室内、室外或有装饰）\n\n如果您能描述这张图片，我可以帮您进一步分析。",
+      "status": "PASS",
+      "note": "UI send/stream/done chain completed",
+      "quality_pass": null,
+      "image_sent": true,
+      "wall_ms": 6961,
+      "service_ms": 6933,
+      "ttft_ms": 509,
+      "tokens": 100,
+      "chars": 490,
+      "aborted": false,
+      "warnings": [
+        "image encode failed"
+      ],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1377.8,
+        "load1": 4.78076171875,
+        "ui_RSS_MiB": 533.5
+      },
+      "elapsed_run_s": 168.9,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1388.8,
+        "load1": 5.27587890625,
+        "ui_RSS_MiB": 533.5
+      }
+    },
+    {
+      "id": "empty_prompt",
+      "category": "错误处理",
+      "status": "PASS",
+      "note": "Actual protocol response",
+      "response": {
+        "ev": "error",
+        "msg": "empty prompt"
+      },
+      "elapsed_run_s": 168.91,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1388.8,
+        "load1": 5.27587890625,
+        "ui_RSS_MiB": 533.5
+      }
+    },
+    {
+      "id": "unknown_command",
+      "category": "错误处理",
+      "status": "PASS",
+      "note": "Actual protocol response",
+      "response": {
+        "ev": "error",
+        "msg": "unknown cmd"
+      },
+      "elapsed_run_s": 168.91,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1388.8,
+        "load1": 5.27587890625,
+        "ui_RSS_MiB": 533.5
+      }
+    },
+    {
+      "id": "stop_generation",
+      "category": "打断恢复",
+      "prompt": "请从1一直数到100，每个数字用逗号分隔。",
+      "answer": "1, 2, ..., 100",
+      "status": "FAIL",
+      "note": "Abort did not complete as expected",
+      "quality_pass": false,
+      "image_sent": false,
+      "wall_ms": 1241,
+      "service_ms": 1209,
+      "ttft_ms": 559,
+      "tokens": 10,
+      "chars": 14,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": "stop_generation.png",
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1388.4,
+        "load1": 5.27587890625,
+        "ui_RSS_MiB": 533.5
+      },
+      "elapsed_run_s": 171.19,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1376.0,
+        "load1": 5.27587890625,
+        "ui_RSS_MiB": 533.7
+      }
+    },
+    {
+      "id": "after_stop",
+      "category": "打断恢复",
+      "prompt": "只回复：恢复成功。",
+      "answer": "1, 2, ..., 100",
+      "status": "FAIL",
+      "note": "Expected to mention: 恢复成功",
+      "quality_pass": false,
+      "image_sent": false,
+      "wall_ms": 1188,
+      "service_ms": 1154,
+      "ttft_ms": 503,
+      "tokens": 10,
+      "chars": 14,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1376.0,
+        "load1": 5.27587890625,
+        "ui_RSS_MiB": 533.7
+      },
+      "elapsed_run_s": 172.59,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1375.8,
+        "load1": 5.27587890625,
+        "ui_RSS_MiB": 533.7
+      }
+    },
+    {
+      "id": "client_reconnect",
+      "category": "连接恢复",
+      "status": "PASS",
+      "note": "Reconnect only the UI socket; inference service was not restarted",
+      "elapsed_run_s": 173.4,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1375.7,
+        "load1": 4.93310546875,
+        "ui_RSS_MiB": 533.7
+      }
+    },
+    {
+      "id": "after_reconnect",
+      "category": "连接恢复",
+      "prompt": "只输出pong。",
+      "answer": "Pong.",
+      "status": "FAIL",
+      "note": "Expected exact output: pong",
+      "quality_pass": false,
+      "image_sent": false,
+      "wall_ms": 736,
+      "service_ms": 689,
+      "ttft_ms": 487,
+      "tokens": 3,
+      "chars": 5,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1375.5,
+        "load1": 4.93310546875,
+        "ui_RSS_MiB": 533.7
+      },
+      "elapsed_run_s": 174.76,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1389.1,
+        "load1": 4.93310546875,
+        "ui_RSS_MiB": 533.7
+      }
+    },
+    {
+      "id": "tts_synthesis",
+      "category": "语音",
+      "status": "PASS",
+      "note": "Real synthesized waveform; physical audibility requires listening",
+      "samples": 50363,
+      "sample_rate": 22050,
+      "rms": 0.06673864275217056,
+      "synthesis_seconds": 0.9597294020022673,
+      "elapsed_run_s": 175.72,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1371.5,
+        "load1": 4.93310546875,
+        "ui_RSS_MiB": 552.4
+      }
+    },
+    {
+      "id": "tts_asr_roundtrip",
+      "category": "语音识别",
+      "status": "PASS",
+      "note": "Digital TTS-to-ASR test, not acoustic microphone recognition",
+      "transcription": "你好这是设备语音测试",
+      "seconds": 0.4787053840009321,
+      "elapsed_run_s": 176.21,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1367.2,
+        "load1": 4.93310546875,
+        "ui_RSS_MiB": 557.1
+      }
+    },
+    {
+      "id": "mic_capture",
+      "category": "麦克风",
+      "status": "PASS",
+      "note": "Real microphone device read; no claim about ambient speech accuracy",
+      "samples": 38400,
+      "rms": 0.23503614962100983,
+      "device": "hw:0,0",
+      "elapsed_run_s": 178.94,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1366.8,
+        "load1": 4.61767578125,
+        "ui_RSS_MiB": 557.1
+      }
+    },
+    {
+      "id": "ui_auto_speech",
+      "category": "自动朗读",
+      "prompt": "请只回答：你好，很高兴见到你。",
+      "answer": "你好！很高兴见到你。",
+      "status": "PASS",
+      "note": "UI send/stream/done chain completed",
+      "quality_pass": null,
+      "image_sent": false,
+      "wall_ms": 982,
+      "service_ms": 940,
+      "ttft_ms": 525,
+      "tokens": 6,
+      "chars": 30,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": true,
+      "screenshot": "ui_auto_speech.png",
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1367.1,
+        "load1": 4.61767578125,
+        "ui_RSS_MiB": 557.1
+      },
+      "elapsed_run_s": 183.52,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1353.4,
+        "load1": 4.32763671875,
+        "ui_RSS_MiB": 558.1
+      }
+    },
+    {
+      "id": "camera_and_speech",
+      "category": "并发场景",
+      "prompt": "只用一句话说出画面里的主要物体。",
+      "answer": "一只手放在嘴前，背景是天花板和人物。Human body is a very important part of the human body. The human body has many different parts, each with its own unique function. The human body consists of organs that work together to keep us alive and healthy. Each organ plays an essential role in our daily life. For example, the digestive system helps digest food from the stomach. The respiratory system takes oxygen from the air and delivers it to the lungs. The circulatory system transports nutrients and oxygen throughout the body. The nervous system controls all other organs. The skin is a very important part of the human body. It protects us from the outside world. The digestive system helps digest food from the stomach. The respiratory system takes oxygen from the air and delivers it to the lungs. The circulatory system transports nutrients and oxygen throughout the body. The nervous system controls all other organs. The skin is a very important part of the human body. It protects us from the outside world.",
+      "status": "PASS",
+      "note": "UI send/stream/done chain completed",
+      "quality_pass": null,
+      "image_sent": true,
+      "wall_ms": 19483,
+      "service_ms": 18207,
+      "ttft_ms": 3645,
+      "tokens": 199,
+      "chars": 1034,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": true,
+      "screenshot": "camera_and_speech.png",
+      "camera_frame": "camera_and_speech-camera.bmp",
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1314.8,
+        "load1": 4.32763671875,
+        "ui_RSS_MiB": 560.7
+      },
+      "elapsed_run_s": 206.56,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1304.5,
+        "load1": 5.85009765625,
+        "ui_RSS_MiB": 565.4
+      }
+    },
+    {
+      "id": "repeat_0",
+      "category": "稳定性",
+      "prompt": "只输出测试成功。",
+      "answer": "已确认测试完成，请继续发送其他指令。",
+      "status": "FAIL",
+      "note": "Expected exact output: 测试成功",
+      "quality_pass": false,
+      "image_sent": false,
+      "wall_ms": 1270,
+      "service_ms": 1218,
+      "ttft_ms": 498,
+      "tokens": 11,
+      "chars": 54,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1345.6,
+        "load1": 5.85009765625,
+        "ui_RSS_MiB": 565.4
+      },
+      "elapsed_run_s": 209.34,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1350.3,
+        "load1": 6.1025390625,
+        "ui_RSS_MiB": 565.4
+      }
+    },
+    {
+      "id": "repeat_1",
+      "category": "稳定性",
+      "prompt": "只输出测试成功。",
+      "answer": "已确认测试完成，请继续发送其他指令。",
+      "status": "FAIL",
+      "note": "Expected exact output: 测试成功",
+      "quality_pass": false,
+      "image_sent": false,
+      "wall_ms": 1245,
+      "service_ms": 1197,
+      "ttft_ms": 498,
+      "tokens": 11,
+      "chars": 54,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1350.2,
+        "load1": 6.1025390625,
+        "ui_RSS_MiB": 565.4
+      },
+      "elapsed_run_s": 211.2,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1358.8,
+        "load1": 6.1025390625,
+        "ui_RSS_MiB": 565.4
+      }
+    },
+    {
+      "id": "repeat_2",
+      "category": "稳定性",
+      "prompt": "只输出测试成功。",
+      "answer": "已确认测试完成，请继续发送其他指令。",
+      "status": "FAIL",
+      "note": "Expected exact output: 测试成功",
+      "quality_pass": false,
+      "image_sent": false,
+      "wall_ms": 1233,
+      "service_ms": 1193,
+      "ttft_ms": 498,
+      "tokens": 11,
+      "chars": 54,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1359.2,
+        "load1": 6.1025390625,
+        "ui_RSS_MiB": 565.4
+      },
+      "elapsed_run_s": 213.06,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1358.9,
+        "load1": 6.1025390625,
+        "ui_RSS_MiB": 565.4
+      }
+    },
+    {
+      "id": "repeat_3",
+      "category": "稳定性",
+      "prompt": "只输出测试成功。",
+      "answer": "已确认测试完成，请继续发送其他指令。",
+      "status": "FAIL",
+      "note": "Expected exact output: 测试成功",
+      "quality_pass": false,
+      "image_sent": false,
+      "wall_ms": 1241,
+      "service_ms": 1192,
+      "ttft_ms": 499,
+      "tokens": 11,
+      "chars": 54,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1359.5,
+        "load1": 6.4150390625,
+        "ui_RSS_MiB": 565.4
+      },
+      "elapsed_run_s": 214.92,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1359.3,
+        "load1": 6.4150390625,
+        "ui_RSS_MiB": 565.4
+      }
+    },
+    {
+      "id": "repeat_4",
+      "category": "稳定性",
+      "prompt": "只输出测试成功。",
+      "answer": "已确认测试完成，请继续发送其他指令。",
+      "status": "FAIL",
+      "note": "Expected exact output: 测试成功",
+      "quality_pass": false,
+      "image_sent": false,
+      "wall_ms": 1237,
+      "service_ms": 1193,
+      "ttft_ms": 498,
+      "tokens": 11,
+      "chars": 54,
+      "aborted": false,
+      "warnings": [],
+      "errors": [],
+      "spoken_completed": null,
+      "screenshot": null,
+      "camera_frame": null,
+      "before": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1359.5,
+        "load1": 6.4150390625,
+        "ui_RSS_MiB": 565.4
+      },
+      "elapsed_run_s": 216.79,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1359.7,
+        "load1": 6.4150390625,
+        "ui_RSS_MiB": 565.4
+      }
+    },
+    {
+      "id": "manual_visual_accuracy",
+      "category": "人工复核",
+      "status": "MANUAL",
+      "note": "Compare saved live frame and description; unknown live scene prevents automatic truth grading",
+      "elapsed_run_s": 216.79,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1359.7,
+        "load1": 6.4150390625,
+        "ui_RSS_MiB": 565.4
+      }
+    },
+    {
+      "id": "manual_audio_audibility",
+      "category": "人工复核",
+      "status": "MANUAL",
+      "note": "Playback completion/waveform do not prove loudspeaker is audible at the filming position",
+      "elapsed_run_s": 216.79,
+      "resource": {
+        "MemTotal_MiB": 3900.4,
+        "MemAvailable_MiB": 1359.7,
+        "load1": 6.4150390625,
+        "ui_RSS_MiB": 565.4
+      }
+    }
+  ]
+}

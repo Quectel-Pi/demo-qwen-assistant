@@ -1,0 +1,40 @@
+[run] desktop=w uid=1001 backend=wayland im=wayland
+[rkchat] keyboard=system backend=GdkWaylandDisplay uid=1001
+
+** (rkchat.py:522671): WARNING **: 01:05:46.840: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat.py:522671): WARNING **: 01:05:46.870: atk-bridge: get_device_events_reply: unknown signature
+
+** (rkchat.py:522671): WARNING **: 01:05:46.870: atk-bridge: GetRegisteredEvents returned message with unknown signature
+
+** (rkchat.py:522671): WARNING **: 01:05:46.892: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat.py:522671): WARNING **: 01:05:46.892: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat.py:522671): WARNING **: 01:05:46.911: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat.py:522671): WARNING **: 01:05:46.911: atk-bridge: get_device_events_reply: unknown signature
+
+** (rkchat.py:522671): WARNING **: 01:05:46.911: atk-bridge: GetRegisteredEvents returned message with unknown signature
+
+** (rkchat.py:522671): WARNING **: 01:05:46.911: atk-bridge: get_device_events_reply: unknown signature
+
+** (rkchat.py:522671): WARNING **: 01:05:46.911: atk-bridge: GetRegisteredEvents returned message with unknown signature
+
+** (rkchat.py:522671): WARNING **: 01:05:46.936: atk-bridge: get_device_events_reply: unknown signature
+
+** (rkchat.py:522671): WARNING **: 01:05:46.936: atk-bridge: GetRegisteredEvents returned message with unknown signature
+
+** (rkchat.py:522671): WARNING **: 01:05:46.956: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat.py:522671): WARNING **: 01:05:46.956: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat.py:522671): WARNING **: 01:05:46.984: AT-SPI: Could not obtain desktop path or name
+
+Terminated

@@ -1,0 +1,463 @@
+/* ============================================================================
+ * rkchat 深色主题
+ *
+ * 目标屏：RK3576 DSI 1280x800（触摸屏）。所有尺寸按这块屏校准，
+ * 不再按 1920x1080 外接屏假设，避免字号/padding 过大挤掉内容区。
+ *
+ * 设计约定（改样式请遵守，保持成体系）：
+ *   1. 颜色只用下面「色板」里的变量值，不要在别处临时造新色。
+ *   2. 字号层级固定 4 档：19 / 15 / 14 / 12，不再新增中间值。
+ *   3. 圆角固定 3 档：14（气泡、按钮）/ 10（输入框）/ 6（小元素）。
+ *   4. 间距用 4 的倍数。竖屏空间紧张，纵向 padding 一律克制。
+ *   5. 交互态（hover / active / focus / disabled）每个可点元素都要有。
+ *
+ * 色板
+ *   背景 layer0  #14161a   最底（窗口、对话区）
+ *   背景 layer1  #1b1e24   顶栏、输入栏（抬升一档）
+ *   背景 layer2  #23272f   气泡、输入框（再抬一档）
+ *   背景 layer3  #2c313a   按钮、滚动条
+ *   描边 border  #333944
+ *   描边 强调    #3f4653
+ *   文字 primary #e6e8eb
+ *   文字 secondary #9aa3b0
+ *   文字 muted   #6f7783
+ *   强调 accent  #3b82f6
+ *   成功 #4ade80  警告 #fbbf24  危险 #f87171
+ * ========================================================================= */
+
+* {
+    outline: none;
+}
+
+window {
+    background-color: #14161a;
+    color: #e6e8eb;
+}
+
+/* ── 顶部状态栏 ───────────────────────────────────────────────
+ * 1280 宽屏横向富余，纵向宝贵：上下 padding 各 8px，整条 56px 左右。
+ * 左侧标题块与右侧状态块用 spacer 撑开，状态之间靠 gap 分隔，不加竖线
+ * （竖线在深色底上显脏，改用留白分组更干净）。
+ */
+.topbar {
+    background-color: #1b1e24;
+    border-bottom: 1px solid #2a2f38;
+    padding: 8px 16px;
+}
+
+.app-title {
+    font-size: 19px;
+    font-weight: bold;
+    color: #e6e8eb;
+}
+
+.app-sub {
+    font-size: 12px;
+    color: #7f8794;
+    /* 副标题比标题缩进 1px，视觉上从属感更明确 */
+    padding-top: 1px;
+}
+
+.stat {
+    font-size: 13px;
+    color: #9aa3b0;
+    padding: 0 8px;
+}
+
+/* 状态值用正文色 + 加粗，与灰色标签本身拉开层级 */
+.stat-value {
+    color: #e6e8eb;
+    font-weight: bold;
+}
+
+.stat-ok   { color: #4ade80; }
+.stat-warn { color: #fbbf24; }
+.stat-bad  { color: #f87171; }
+
+/* ── 对话区 ───────────────────────────────────────────────────
+ * chat-box 的 padding 是气泡距窗口边缘的安全区。
+ * 左右各 20px（比原来 24px 略收，给长段落多争取 8px 行宽），
+ * 上下 14px，配合 chat-box 自身 spacing=14 形成统一节奏。
+ */
+.chat-scroll {
+    background-color: #14161a;
+}
+
+.chat-box {
+    padding: 14px 20px;
+}
+
+/* 气泡基类：统一圆角/字号，只让颜色区分类别。
+ * 不对称圆角（一侧 8 / 其余 14）做出"指向"感，区分双方。
+ *
+ * 注意：padding 不写在这里。GTK3 的 GtkEventBox 上 CSS padding 不生效
+ * （实测气泡左右 padding 只剩 1px，文字贴边）。真实内边距由 rkchat.py
+ * 内层 Box 的 .bubble-pad 用 border-width 实现，见下面 .bubble-pad 规则。
+ * 这里的 padding 保留 0 明确意图，避免和 border-width 叠加成双倍边距。
+ */
+.bubble-user,
+.bubble-ai,
+.bubble-err {
+    border-radius: 14px;
+    padding: 0;
+    font-size: 15px;
+}
+
+/* 气泡真实内边距：border-width 在这一层是生效的。
+ * 上下 9 / 左右 13 —— 比视觉 padding 略小，因为外层 EventBox 的圆角
+ * 会吃掉一点可用面积，这个值实测文字与圆角边界刚好留出呼吸感。
+ * 三种气泡共用，保证同类元素边距一致。
+ */
+.bubble-pad {
+    border-width: 9px 13px;
+    border-style: solid;
+    border-color: transparent;
+    background-color: transparent;
+}
+
+.bubble-user {
+    background-color: #2563eb;
+    color: #ffffff;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 8px;
+}
+
+/* 用户气泡内的 pad 必须透明，否则会盖住蓝色底 */
+.bubble-user .bubble-pad {
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.bubble-ai {
+    background-color: #23272f;
+    color: #e6e8eb;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 14px;
+    /* 极淡描边让 AI 气泡在深底上有边界，否则大面积色块发飘 */
+    border: 1px solid #2c313a;
+}
+
+.bubble-err {
+    background-color: #3a1d1d;
+    color: #fca5a5;
+    border: 1px solid #5a2a2a;
+    font-size: 14px;
+}
+
+.bubble-sys {
+    color: #7f8794;
+    font-size: 12px;
+    padding: 2px 4px;
+}
+
+/* system 气泡也走 bubble-pad，但不需要大边距，单独收紧 */
+.bubble-sys .bubble-pad,
+.bubble-sys.bubble-pad {
+    border-width: 2px 4px;
+    border-color: transparent;
+    background-color: transparent;
+}
+
+/* 元信息（耗时/字数）：比正文小一档，颜色压到 muted，不抢注意力 */
+.meta {
+    font-size: 12px;
+    color: #6f7783;
+    padding: 3px 4px 0 4px;
+}
+
+/* 图片缩略图 */
+.thumb {
+    border-radius: 10px;
+    border: 1px solid #333944;
+}
+
+/* ── 输入区 ───────────────────────────────────────────────────
+ * 输入栏与顶栏用同一底色（layer1），形成上下"夹住"对话区的稳定框架。
+ * 按钮与输入框同高（都靠 padding 撑到 44px 左右），触摸命中区足够。
+ */
+.inputbar {
+    background-color: #1b1e24;
+    border-top: 1px solid #2a2f38;
+    padding: 10px 16px;
+}
+
+.entry {
+    background-color: #23272f;
+    color: #e6e8eb;
+    border: 1px solid #333944;
+    border-radius: 10px;
+    padding: 9px 14px;
+    font-size: 15px;
+    caret-color: #60a5fa;
+}
+
+/* 聚焦态：描边换强调色 + 极淡外圈，避免只有 1px 变化看不出来 */
+.entry:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.22);
+}
+
+.entry:disabled {
+    background-color: #1b1e24;
+    color: #5a6270;
+    border-color: #2a2f38;
+}
+
+/* 占位提示文字单独压暗；GTK3 用 placeholder 伪类 */
+.entry placeholder {
+    color: #6f7783;
+}
+
+button {
+    background-image: none;
+    background-color: #2c313a;
+    color: #e6e8eb;
+    border: 1px solid #3f4653;
+    border-radius: 10px;
+    padding: 9px 16px;
+    font-size: 14px;
+    box-shadow: none;
+}
+
+button:hover {
+    background-color: #363c47;
+    border-color: #4a5261;
+}
+
+button:active {
+    background-color: #2a2f38;
+    border-color: #4a5261;
+}
+
+/* 键盘焦点环：触摸屏用不上，但接了鼠标/键盘时必须有可见反馈 */
+button:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+.btn-primary {
+    background-color: #2563eb;
+    border-color: #3b82f6;
+    font-weight: bold;
+    color: #ffffff;
+}
+.btn-primary:hover  { background-color: #3b82f6; border-color: #60a5fa; }
+.btn-primary:active { background-color: #1d4ed8; }
+
+.btn-stop {
+    background-color: #b91c1c;
+    border-color: #dc2626;
+    font-weight: bold;
+    color: #ffffff;
+}
+.btn-stop:hover  { background-color: #dc2626; border-color: #ef4444; }
+.btn-stop:active { background-color: #991b1b; }
+
+.btn-cam {
+    background-color: #0f766e;
+    border-color: #14b8a6;
+    color: #ffffff;
+}
+.btn-cam:hover  { background-color: #14b8a6; border-color: #2dd4bf; }
+.btn-cam:active { background-color: #115e59; }
+
+/* 摄像头/麦克风激活态：红底表示"正在采集"，必须一眼可辨 */
+.btn-cam-on {
+    background-color: #dc2626;
+    border-color: #ef4444;
+    font-weight: bold;
+    color: #ffffff;
+}
+.btn-cam-on:hover  { background-color: #ef4444; }
+.btn-cam-on:active { background-color: #b91c1c; }
+
+.btn-mic-on {
+    background-color: #b91c1c;
+    border-color: #ef4444;
+    font-weight: bold;
+    color: #ffffff;
+}
+.btn-mic-on:hover  { background-color: #ef4444; }
+.btn-mic-on:active { background-color: #991b1b; }
+
+/* 自动朗读开启态：用绿色区分于「摄像头/语音」的红色激活态 */
+.btn-speak-on {
+    background-color: #166534;
+    border-color: #22c55e;
+    color: #dcfce7;
+    font-weight: bold;
+}
+.btn-speak-on:hover  { background-color: #15803d; }
+.btn-speak-on:active { background-color: #14532d; }
+
+button:disabled {
+    background-color: #1f232a;
+    color: #5a6270;
+    border-color: #2a2f38;
+}
+
+/* ── 摄像头预览 ───────────────────────────────────────────────
+ * 预览区在 800px 高的屏上要占掉 300px+，因此边框只用一条上边线，
+ * 不再给整块加深色底，减少"重块"感。
+ */
+.preview-frame {
+    background-color: #101216;
+    border-top: 1px solid #2a2f38;
+}
+
+.preview-label {
+    font-size: 13px;
+    color: #9aa3b0;
+    padding: 6px 12px;
+}
+
+/* 语音状态灯 */
+.mic-live {
+    color: #f87171;
+    font-size: 13px;
+    font-weight: bold;
+}
+.mic-idle {
+    color: #5a6270;
+    font-size: 13px;
+}
+
+/* ── 滚动条 ───────────────────────────────────────────────────
+ * 触摸屏可以拖动，做宽一点（10px）；静默态半透明，hover 才显形，
+ * 避免常驻一条亮条割裂画面。
+ */
+scrollbar {
+    background-color: transparent;
+    border: none;
+}
+
+scrollbar trough {
+    background-color: transparent;
+    border: none;
+}
+
+scrollbar slider {
+    background-color: #3a4049;
+    border-radius: 6px;
+    min-width: 10px;
+    min-height: 32px;
+    margin: 2px;
+}
+
+scrollbar slider:hover {
+    background-color: #4a5261;
+}
+
+scrollbar slider:active {
+    background-color: #5a6270;
+}
+
+/* ── 虚拟键盘（触摸屏用）─────────────────────────────────────
+ * 键盘是"临时层"，用比输入栏再暗一档的底（#171a20）沉下去，
+ * 与上方内容形成深度差。按键比通用 button 更高更宽，方便手指命中。
+ */
+.vkbd {
+    background-color: #171a20;
+    border-top: 1px solid #2a2f38;
+    padding: 4px 8px 6px 8px;
+}
+
+.vkbd-hint {
+    color: #7f8794;
+    font-size: 12px;
+    padding: 0 4px 2px 4px;
+}
+
+.vkbd-key {
+    background-image: none;
+    background-color: #2f3540;
+    color: #eef1f5;
+    border: 1px solid #3d4450;
+    border-radius: 8px;
+    /* 触摸目标 46px：padding 7+7 + min-height 32 + border 2 = 48px。
+       旧值 padding10/min-height34 做出 56px 键，能点准但键盘高达 303px，
+       把对话区从 354px 压到 202px，得不偿失。 */
+    padding: 7px 0;
+    font-size: 18px;
+    min-height: 32px;
+    box-shadow: none;
+}
+.vkbd-key:hover  { background-color: #3a4150; border-color: #4a5261; }
+.vkbd-key:active { background-color: #4a5265; }
+
+.vkbd-fn {
+    background-image: none;
+    background-color: #262b34;
+    color: #b9c1cd;
+    border: 1px solid #343a45;
+    border-radius: 8px;
+    padding: 10px 0;
+    font-size: 14px;
+    min-height: 34px;
+    box-shadow: none;
+}
+.vkbd-fn:hover  { background-color: #313846; border-color: #414958; }
+.vkbd-fn:active { background-color: #262b34; }
+
+.vkbd-enter {
+    background-image: none;
+    background-color: #2563eb;
+    color: #ffffff;
+    border: 1px solid #3b82f6;
+    border-radius: 8px;
+    padding: 10px 0;
+    font-size: 15px;
+    font-weight: bold;
+    min-height: 34px;
+    box-shadow: none;
+}
+.vkbd-enter:hover  { background-color: #3b82f6; }
+.vkbd-enter:active { background-color: #1d4ed8; }
+
+.vkbd-cand {
+    background-image: none;
+    background-color: #33405a;
+    color: #dbeafe;
+    border: 1px solid #3f5273;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 19px;
+    min-height: 30px;
+    box-shadow: none;
+}
+.vkbd-cand:hover  { background-color: #3f5273; border-color: #4f6a94; }
+.vkbd-cand:active { background-color: #2d3850; }
+
+/* 小屏紧凑键盘（1280x800 等纵向空间不够时用）
+ * compact 变体统一压 padding 与字号，同时保留圆角半径 6 与
+ * 各自的底色/描边，确保压扁后仍能区分 普通键 / 功能键 / 回车。
+ */
+.vkbd-compact {
+    padding: 6px 0;
+    font-size: 15px;
+    min-height: 22px;
+    border-radius: 6px;
+}
+.vkbd-key.vkbd-compact {
+    /* 触摸目标下限 44px：1280x800 触摸屏上 29px 实测点不准，
+       容易误触邻键。padding 4+4 + min-height 30 + border 2 = 40px 内容区，
+       加上行间距后实际可达 ~44px。 */
+    padding: 7px 0;
+    font-size: 17px;
+    min-height: 30px;
+}
+.vkbd-fn.vkbd-compact {
+    padding: 7px 0;
+    font-size: 14px;
+    min-height: 30px;
+}
+.vkbd-enter.vkbd-compact {
+    padding: 7px 0;
+    font-size: 15px;
+    min-height: 30px;
+}
+.vkbd-cand.vkbd-compact {
+    padding: 4px 10px;
+    font-size: 16px;
+    min-height: 20px;
+}

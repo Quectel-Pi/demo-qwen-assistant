@@ -1,0 +1,20 @@
+{
+  "id": "kernel_touch_closes_camera_during_question",
+  "status": "PASS",
+  "position": {
+    "x": 68,
+    "y": 764,
+    "busy": true,
+    "button_enabled": true
+  },
+  "click_events": [
+    {
+      "busy": true,
+      "mode_after_click": false
+    }
+  ],
+  "cam_mode": false,
+  "camera_running": false,
+  "preview_visible": false,
+  "answer_finished": true
+}

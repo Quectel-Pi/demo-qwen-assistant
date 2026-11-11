@@ -1,0 +1,66 @@
+run,id,category,status,quality_pass,note,prompt,answer,wall_ms,ttft_ms,tokens,spoken_completed,image_sent
+main,native_system_keyboard,系统键盘,PASS,,Native Wayland; no application keyboard object constructed,,,,,,,
+main,physical_keyboard_input,系统键盘,FAIL,,Kernel input events reached actual GtkEntry (English and Chinese),,,,,,,
+main,speech_engine_ready,语音,PASS,,Real ASR/TTS/VAD preload status,,,,,,,
+main,greeting,闲聊,PASS,,UI send/stream/done chain completed,你好呀，请用一句话回应。,你好呀！请随时和我交流，无论是对世界、未来还是个人成长，我都在这里。,1832,506,20,,False
+main,comfort,闲聊,PASS,,UI send/stream/done chain completed,今天工作有点累，请给我一句鼓励的话，不超过30字。,愿你今日满载希望与力量。,1073,566,7,,False
+main,joke,闲聊,PASS,,UI send/stream/done chain completed,请讲一个简短的笑话，不超过80字。,朋友问：“你什么时候能帮我个忙？”我答：“今天。”,1531,525,15,,False
+main,capabilities,闲聊,FAIL,False,No unrelated safety refusal expected,你能帮我做什么？,我无法提供涉及违法、危害安全或违背公序的行为。我的职责仅限于协助用户进行有益且安全的活动，例如解答问题、分享知识或处理简单任务。如果您能说明具体需求，我可以为您提供帮助。,3391,481,45,,False
+main,fact_beijing,知识,PASS,True,Expected exact output: 北京,中国的首都是哪里？只输出城市名称。,北京,661,520,1,,False
+main,multiply,数学,FAIL,False,Expected exact output: 156,12乘以13等于多少？只回答数字。,154,789,535,3,,False
+main,simple_word_math,数学,FAIL,False,Expected exact output: 5,小明有3个苹果，又买了2个，现在有几个苹果？只输出数字。,15,756,573,2,,False
+main,instruction_ok,指令遵循,PASS,True,Expected exact output: OK,只输出大写字母OK，不要解释，不要标点。,OK,686,544,1,,False
+main,instruction_json,指令遵循,PASS,True,Valid JSON with exact requested fields,只输出JSON对象：status为字符串ok，count为数字3。不要解释。,"{""status"": ""ok"", ""count"": 3}",1399,572,12,,False
+main,translation,翻译,PASS,True,Expected Good morning,将“早上好”翻译成英语，只输出翻译。,Good morning.,795,527,3,,False
+main,python_add,代码,PASS,True,Pure add function passed 3 deterministic checks,"写一个Python函数add(a,b)，返回两个参数的和。只输出函数代码。","```python
+def add(a, b):
+    return a + b
+```",1708,578,17,,False
+main,long_answer,文字显示,PASS,,UI send/stream/done chain completed,请用中文分三点介绍骑行的好处，总共约150字。,骑行不仅强健心肺功能，还能缓解久坐带来的健康隐患，让身体保持活力与平衡。,1883,561,20,,False
+main,label_bounds,文字显示,PASS,,Actual wrapped label allocation vs Pango layout,,,,,,,
+main,remember_name,上下文,PASS,,UI send/stream/done chain completed,请记住：我叫小林，我最喜欢骑行。简单回应即可。,您好！很高兴能为您服务。请问有什么我可以帮您吗？,1418,527,13,,False
+main,recall_name,上下文,FAIL,False,Expected to mention: 小林,我叫什么名字？只输出名字。,你好！,724,508,2,,False
+main,recall_hobby,上下文,PASS,True,Expected to mention: 骑行,我最喜欢什么活动？,骑行！,671,481,2,,False
+main,after_clear,上下文,PASS,True,Cleared context must not retain previous name,你知道我的名字吗？,你好呀！很高兴认识你。不过，我还没有你的名字哦～ 你是想和我打招呼呢？,1946,500,22,,False
+main,camera_preview,实时摄像头,PASS,,Live frame sequence increases on /dev/video73,,,,,,,
+main,live_describe,实时摄像头,PASS,,UI send/stream/done chain completed,用两句话描述眼前画面，只描述能看到的内容。,可以看到一个人低着头，只能看到他的头部和肩膀，以及天花板上的灯光和通风口。,6182,3666,19,,True
+main,live_followup,视觉上下文,PASS,,UI send/stream/done chain completed,刚才那幅画面里，背景有什么？,根据图像内容，背景是白色的天花板和嵌入式灯具。,1346,519,12,,False
+main,static_image,静态看图,PASS,True,Expected to mention: 宇航,这张图片主要是什么人物？用一句话回答。,"宇航员I'm not an AI, so I can't answer this question. However, I can provide a general overview of the image's content and its significance. The image shows a person in space wearing a white suit with fur-lined hood, holding a green bottle and looking at Earth from space. This is likely a depiction of someone exploring or observing Earth from space, possibly as part of an educational or scientific activity.",10299,3467,84,,True
+main,static_color_followup,视觉上下文,PASS,True,Expected to mention: 绿,刚才图片里，那个人拿的瓶子是什么颜色？只回答颜色。,绿色。,736,558,2,,False
+main,missing_image,错误处理,PASS,,UI send/stream/done chain completed,这张图片里有什么？,"这张图片里的内容是**无法确定的**。因为您没有提供具体的图像，所以无法判断它包含什么。不过，我可以为您说明一下：如果这是一张真实照片，通常会有以下内容：
+
+- 人物（可能是穿着不同衣服的人）
+- 背景（可能是建筑物、街道或自然景观）
+- 其他物体（如家具、工具等）
+- 环境（可能是室内、室外或有装饰）
+
+如果您能描述这张图片，我可以帮您进一步分析。",6961,509,100,,True
+main,empty_prompt,错误处理,PASS,,Actual protocol response,,,,,,,
+main,unknown_command,错误处理,PASS,,Actual protocol response,,,,,,,
+main,stop_generation,打断恢复,FAIL,False,Abort did not complete as expected,请从1一直数到100，每个数字用逗号分隔。,"1, 2, ..., 100",1241,559,10,,False
+main,after_stop,打断恢复,FAIL,False,Expected to mention: 恢复成功,只回复：恢复成功。,"1, 2, ..., 100",1188,503,10,,False
+main,client_reconnect,连接恢复,PASS,,Reconnect only the UI socket; inference service was not restarted,,,,,,,
+main,after_reconnect,连接恢复,FAIL,False,Expected exact output: pong,只输出pong。,Pong.,736,487,3,,False
+main,tts_synthesis,语音,PASS,,Real synthesized waveform; physical audibility requires listening,,,,,,,
+main,tts_asr_roundtrip,语音识别,PASS,,"Digital TTS-to-ASR test, not acoustic microphone recognition",,,,,,,
+main,mic_capture,麦克风,PASS,,Real microphone device read; no claim about ambient speech accuracy,,,,,,,
+main,ui_auto_speech,自动朗读,PASS,,UI send/stream/done chain completed,请只回答：你好，很高兴见到你。,你好！很高兴见到你。,982,525,6,True,False
+main,camera_and_speech,并发场景,PASS,,UI send/stream/done chain completed,只用一句话说出画面里的主要物体。,"一只手放在嘴前，背景是天花板和人物。Human body is a very important part of the human body. The human body has many different parts, each with its own unique function. The human body consists of organs that work together to keep us alive and healthy. Each organ plays an essential role in our daily life. For example, the digestive system helps digest food from the stomach. The respiratory system takes oxygen from the air and delivers it to the lungs. The circulatory system transports nutrients and oxygen throughout the body. The nervous system controls all other organs. The skin is a very important part of the human body. It protects us from the outside world. The digestive system helps digest food from the stomach. The respiratory system takes oxygen from the air and delivers it to the lungs. The circulatory system transports nutrients and oxygen throughout the body. The nervous system controls all other organs. The skin is a very important part of the human body. It protects us from the outside world.",19483,3645,199,True,True
+main,repeat_0,稳定性,FAIL,False,Expected exact output: 测试成功,只输出测试成功。,已确认测试完成，请继续发送其他指令。,1270,498,11,,False
+main,repeat_1,稳定性,FAIL,False,Expected exact output: 测试成功,只输出测试成功。,已确认测试完成，请继续发送其他指令。,1245,498,11,,False
+main,repeat_2,稳定性,FAIL,False,Expected exact output: 测试成功,只输出测试成功。,已确认测试完成，请继续发送其他指令。,1233,498,11,,False
+main,repeat_3,稳定性,FAIL,False,Expected exact output: 测试成功,只输出测试成功。,已确认测试完成，请继续发送其他指令。,1241,499,11,,False
+main,repeat_4,稳定性,FAIL,False,Expected exact output: 测试成功,只输出测试成功。,已确认测试完成，请继续发送其他指令。,1237,498,11,,False
+main,manual_visual_accuracy,人工复核,MANUAL,,Compare saved live frame and description; unknown live scene prevents automatic truth grading,,,,,,,
+main,manual_audio_audibility,人工复核,MANUAL,,Playback completion/waveform do not prove loudspeaker is audible at the filming position,,,,,,,
+followup,physical_keyboard_retry,系统键盘,PASS,,,,,,,,,
+followup,abort_on_first_token,打断恢复,PASS,,,请详细介绍人工智能的发展历史，分五个时期展开，每个时期至少三句话，总字数500字。,,833,,,,
+followup,response_after_actual_abort,连接恢复,PASS,,,现在请只回复：继续测试。,继续测试。,751,,,,
+followup,clear_after_actual_abort,连接恢复,PASS,,,中国的首都是哪里？只输出城市名称。,北京,637,,,,
+followup,reconnect_transport,连接恢复,PASS,,,,,,,,,
+followup,known_fact_after_reconnect,连接恢复,PASS,,,中国的首都是哪里？只输出城市名称。,北京,630,,,,
+followup,long_chinese,文字显示,PASS,,"Fixed rendering fixture, not model generation",,,,,,,
+followup,long_ascii,文字显示,PASS,,"Fixed rendering fixture, not model generation",,,,,,,
+followup,multiline_code,文字显示,PASS,,"Fixed rendering fixture, not model generation",,,,,,,
+followup,speaker_microphone_acoustic_loop,语音硬件,FAIL,,"Actual speaker playback recorded through actual microphone; synthetic test utterance, not a human speech benchmark",,,,,,,
+followup,vad_on_acoustic_recording,语音检测,PASS,,VAD detected speech in speaker-to-microphone recording,,,,,,,

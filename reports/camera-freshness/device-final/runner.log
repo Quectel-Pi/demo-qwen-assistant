@@ -1,0 +1,68 @@
+[RESULT] native_system_ui PASS
+
+** (rkchat-suite.py:1780929): WARNING **: 18:01:46.288: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1780929): WARNING **: 18:01:46.320: atk-bridge: get_device_events_reply: unknown signature
+
+** (rkchat-suite.py:1780929): WARNING **: 18:01:46.320: atk-bridge: GetRegisteredEvents returned message with unknown signature
+
+** (rkchat-suite.py:1780929): WARNING **: 18:01:46.348: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1780929): WARNING **: 18:01:46.370: atk-bridge: get_device_events_reply: unknown signature
+
+** (rkchat-suite.py:1780929): WARNING **: 18:01:46.371: atk-bridge: GetRegisteredEvents returned message with unknown signature
+
+** (rkchat-suite.py:1780929): WARNING **: 18:01:46.371: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1780929): WARNING **: 18:01:46.393: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1780929): WARNING **: 18:01:46.435: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1780929): WARNING **: 18:01:46.453: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1780929): WARNING **: 18:01:46.480: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1780929): WARNING **: 18:01:46.513: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1780929): WARNING **: 18:01:46.544: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1780929): WARNING **: 18:01:46.544: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1780929): WARNING **: 18:01:46.604: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1780929): WARNING **: 18:01:46.630: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1780929): WARNING **: 18:01:46.662: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1780929): WARNING **: 18:01:46.662: AT-SPI: Could not obtain desktop path or name
+
+[RESULT] live_camera_ready PASS
+[RESULT] close_during_capture_cancels_request PASS
+[RESULT] close_camera_while_answering PASS
+[RESULT] request_uses_newer_frame PASS
+[RESULT] text_followup_keeps_latest_scene PASS
+[RESULT] reopen_gets_new_session_and_unique_file PASS
+[RESULT] new_image_resets_old_kv PASS
+[RESULT] different_pixels_reach_encoder PASS
+[RESULT] color_answer_sample PASS
+[RESULT] bad_image_path PASS
+[RESULT] missing_image_payload PASS
+[RESULT] stalled_camera_is_not_sent_as_old_image PASS
+[RESULT] busy_round_not_overwritten PASS
+[RESULT] reading_still_enabled PASS
+[COMPLETE]
+
+(rkchat-suite.py:1780929): Gtk-CRITICAL **: 18:03:16.993: gtk_main_quit: assertion 'main_loops != NULL' failed

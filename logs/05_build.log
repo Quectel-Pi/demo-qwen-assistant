@@ -1,0 +1,51 @@
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/aarch64-linux-gnu-gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/aarch64-linux-gnu-g++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found OpenCV: /home/leox/RKNN-MODEL/rknn-llm/examples/multimodal_model_demo/deploy/3rdparty/opencv/opencv-linux-aarch64 (found version "3.4.5") 
+-- Found OpenMP_C: -fopenmp (found version "4.5") 
+-- Found OpenMP_CXX: -fopenmp (found version "4.5") 
+-- Found OpenMP: TRUE (found version "4.5")  
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/leox/RKNN-MODEL/rknn-llm/examples/multimodal_model_demo/deploy/build
+[ 16%] Building CXX object CMakeFiles/audioenc.dir/src/audio_enc.cc.o
+[ 16%] Building CXX object CMakeFiles/audioenc.dir/src/audio_encoder.cpp.o
+[ 41%] Building CXX object CMakeFiles/imgenc.dir/src/img_encoder.cpp.o
+[ 58%] Building CXX object CMakeFiles/imgenc.dir/src/image_enc.cc.o
+[ 58%] Building CXX object CMakeFiles/demo.dir/src/audio_enc.cc.o
+[ 58%] Building CXX object CMakeFiles/demo.dir/src/image_enc.cc.o
+[ 66%] Building CXX object CMakeFiles/audioenc.dir/src/audio_utils.cc.o
+[ 66%] Building CXX object CMakeFiles/demo.dir/src/audio_utils.cc.o
+[ 75%] Building CXX object CMakeFiles/demo.dir/src/main.cpp.o
+[ 83%] Linking CXX executable imgenc
+[ 83%] Built target imgenc
+[ 91%] Linking CXX executable demo
+[100%] Linking CXX executable audioenc
+[100%] Built target audioenc
+[100%] Built target demo
+Consolidate compiler generated dependencies of target imgenc
+[ 25%] Built target imgenc
+Consolidate compiler generated dependencies of target audioenc
+[ 58%] Built target audioenc
+Consolidate compiler generated dependencies of target demo
+[100%] Built target demo
+Install the project...
+-- Install configuration: "Release"
+-- Installing: /home/leox/RKNN-MODEL/rknn-llm/examples/multimodal_model_demo/deploy/install/demo_Linux_aarch64/./imgenc
+-- Set runtime path of "/home/leox/RKNN-MODEL/rknn-llm/examples/multimodal_model_demo/deploy/install/demo_Linux_aarch64/./imgenc" to ""
+-- Installing: /home/leox/RKNN-MODEL/rknn-llm/examples/multimodal_model_demo/deploy/install/demo_Linux_aarch64/./audioenc
+-- Set runtime path of "/home/leox/RKNN-MODEL/rknn-llm/examples/multimodal_model_demo/deploy/install/demo_Linux_aarch64/./audioenc" to ""
+-- Installing: /home/leox/RKNN-MODEL/rknn-llm/examples/multimodal_model_demo/deploy/install/demo_Linux_aarch64/./demo
+-- Set runtime path of "/home/leox/RKNN-MODEL/rknn-llm/examples/multimodal_model_demo/deploy/install/demo_Linux_aarch64/./demo" to ""
+-- Installing: /home/leox/RKNN-MODEL/rknn-llm/examples/multimodal_model_demo/deploy/install/demo_Linux_aarch64/lib/librknnrt.so
+-- Installing: /home/leox/RKNN-MODEL/rknn-llm/examples/multimodal_model_demo/deploy/install/demo_Linux_aarch64/lib/librkllmrt.so
+-- Installing: /home/leox/RKNN-MODEL/rknn-llm/examples/multimodal_model_demo/deploy/install/demo_Linux_aarch64/./demo.jpg
