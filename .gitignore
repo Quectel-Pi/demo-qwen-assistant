@@ -110,3 +110,6 @@ credentials*
 # 交付用的 git bundle / patch 归档（临时产物，不入库）
 /reports/**/*.bundle
 /reports/patches/
+
+# 文档截图目录：PNG 由 .gitignore 排除，README 也随之不入库（避免仓库里出现指向缺失文件的清单）
+/reports/doc-screenshots-*/
