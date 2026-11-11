@@ -276,7 +276,9 @@ class ChatApp:
         # 流式播报：token 一凑成整句就合成朗读，不等整段答案
         self._stream_spk: voice.StreamSpeaker | None = None
         self._speak_buf = ""           # 已收到但还没凑成整句的尾巴
-        self._speak_seq = 0            # 第几轮，防止旧轮回调喂新轮
+        # 第几轮（供调试/日志定位）。旧轮回调是靠 _start_stream_speaker()
+        # 换掉 _stream_spk 对象拦的，不靠这个计数器。
+        self._speak_seq = 0
         # 窗口销毁后，GLib.timeout_add 的回调还会继续被调用；
         # 那时控件已失效，再碰就会段错误（实测销毁后 100% segfault）。
         self._alive = True
@@ -685,7 +687,7 @@ class ChatApp:
                     self._stop_speak.set()
             except Exception:
                 pass
-            subprocess.run(["pkill", "-f", "aplay"],
+            subprocess.run(["pkill", "-x", "aplay"],
                            stdout=subprocess.DEVNULL,
                            stderr=subprocess.DEVNULL)
         self._submit(text)
@@ -696,6 +698,10 @@ class ChatApp:
             return
         if self._capture_pending or self.cli.busy or self.cur_bubble is not None:
             self._on_warn("上一轮尚未结束，请先停止或等待回答完成")
+            # 调用方（_on_send_clicked）已经清空输入框了。这里不回填的话，
+            # 用户刚打的一段话会因为撞上 busy 窗口而永久丢失。
+            self.entry.set_text(text)
+            self.entry.set_position(-1)      # 光标放到末尾，方便接着改
             return
         if self.speak_thread is not None and not self.speak_thread.is_alive():
             self.speak_thread = None
@@ -826,7 +832,7 @@ class ChatApp:
             self._need_replay = False
         # 开启自动朗读：开一轮流式播报器，token 一凑成句就开始朗读，
         # 不必等整段答案生成完（之前要等全部出完才开始播，长回答差十几秒）
-        self._speak_seq += 1
+        self._speak_seq += 1        # 仅作日志/排障用的轮次标记
         if self.auto_speak:
             # A typed question cancels any in-progress dictation too. Otherwise
             # the recorder can submit a stale partial utterance over this round.
@@ -990,14 +996,16 @@ class ChatApp:
                 GLib.idle_add(self._focus_system_entry)
 
     def _update_conn_label(self):
+        ctx = self.lbl_conn.get_style_context()
         if self.cli.connected:
             self.lbl_conn.set_text("● 已连接")
-            self.lbl_conn.get_style_context().remove_class("stat-warn")
-            self.lbl_conn.get_style_context().add_class("stat-ok")
+            ctx.remove_class("stat-warn")
+            ctx.remove_class("stat-bad")
+            ctx.add_class("stat-ok")
         else:
             self.lbl_conn.set_text("● 未连接")
-            self.lbl_conn.get_style_context().remove_class("stat-ok")
-            self.lbl_conn.get_style_context().add_class("stat-bad")
+            ctx.remove_class("stat-ok")
+            ctx.add_class("stat-bad")
 
     def _on_clear_clicked(self, *_):
         if self.cli.busy or self._capture_pending:
@@ -1250,7 +1258,7 @@ class ChatApp:
                 stop.set()
 
             threading.Thread(target=watch, daemon=True).start()
-            if voice.VoiceIO().listen_for_barge_in(stop):
+            if self.voice_io.listen_for_barge_in(stop):
                 self._interrupt("语音打断")
                 return True
             return False
@@ -1260,7 +1268,7 @@ class ChatApp:
             return False
         if not self._is_speaking():
             return False
-        if voice.VoiceIO().listen_for_barge_in(stop):
+        if self.voice_io.listen_for_barge_in(stop):
             self._interrupt("语音打断")
             return True
         return False
@@ -1279,7 +1287,7 @@ class ChatApp:
             pass
         if self._stream_spk is not None:
             self._stream_spk.stop()
-        subprocess.run(["pkill", "-f", "aplay"],
+        subprocess.run(["pkill", "-x", "aplay"],
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
         # 2) 停止推理。标记 _interrupted，让 _on_done 不覆盖气泡 meta。
@@ -1380,8 +1388,12 @@ class ChatApp:
             return False
         used, total = read_mem()
         self.lbl_mem.set_text("内存 %d/%d MB" % (used, total))
+        mem_ctx = self.lbl_mem.get_style_context()
         if total and used / total > 0.9:
-            self.lbl_mem.get_style_context().add_class("stat-bad")
+            mem_ctx.add_class("stat-bad")
+        else:
+            # 回到正常区间必须摘掉，否则内存条一旦红过就永远是红的
+            mem_ctx.remove_class("stat-bad")
 
         load = npu_load()
         if load is None:
@@ -1459,8 +1471,10 @@ def main():
         else:
             i += 1
     app = ChatApp(sock=sock, dev=dev, fullscreen=fullscreen, keyboard=keyboard)
+    _disp = Gdk.Display.get_default()
     print("[rkchat] keyboard=%s backend=%s uid=%d" % (
-        keyboard, Gdk.Display.get_default().__gtype__.name, os.getuid()), flush=True)
+        keyboard, _disp.__gtype__.name if _disp is not None else "-",
+        os.getuid()), flush=True)
     app.run()
     # 主循环退出后，守护线程可能还在跑（摄像头读帧/朗读）。
     # 这里显式停一遍并稍等，避免解释器终结时与它们竞争导致 segfault。

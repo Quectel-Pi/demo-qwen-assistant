@@ -20,6 +20,7 @@
 #include <fcntl.h>
 #include <poll.h>
 #include <pthread.h>
+#include <pwd.h>
 #include <signal.h>
 #include <stdarg.h>
 #include <stdint.h>
@@ -107,32 +108,65 @@ static std::string json_escape(const std::string &s) {
 }
 
 // ── 极简 JSON 取值 ─────────────────────────────────────────────────
-// 只处理本服务自己发出的扁平请求对象，不引入第三方 JSON 库。
+// 只处理本服务自己收到的扁平请求对象，不引入第三方 JSON 库。
+//
+// 关键点（P1-2）：必须只在「字符串外部」匹配 key。旧实现用 js.find("\"key\"")，
+// 找的是整行第一次出现的那对引号，于是 prompt 正文里出现 "image" / "keep_history"
+// 这类字面量时会被当成真实参数——用户问「你收到的 image 参数是什么」就足以让
+// 服务端以为本轮带图、去编码 prompt 里的字符串路径，导致提问被静默丢弃。
+// 这里按 JSON 词法顺序扫描：整段跳过带转义的字符串 token，只有该 token 后面跟着
+// ':' 时才认作 key，字符数相同且内容相等才命中。
+// <<<extract:json_find
 static bool json_find(const std::string &js, const char *key, size_t *vb, size_t *ve) {
-    std::string pat = std::string("\"") + key + "\"";
-    size_t p = js.find(pat);
-    if (p == std::string::npos) return false;
-    p = js.find(':', p + pat.size());
-    if (p == std::string::npos) return false;
-    ++p;
-    while (p < js.size() && (js[p] == ' ' || js[p] == '\t')) ++p;
-    if (p >= js.size()) return false;
-    if (js[p] == '"') {
-        size_t q = p + 1;
-        while (q < js.size() && js[q] != '"') {
-            if (js[q] == '\\') ++q;
+    const size_t want = strlen(key);
+    size_t i = 0;
+    while (i < js.size()) {
+        if (js[i] != '"') {          // 字符串外部：结构字符/数字等一律跳过
+            ++i;
+            continue;
+        }
+        // 一个字符串 token：从 i 的开引号扫到闭引号，转义按两字节跳过
+        size_t s = i + 1;
+        size_t q = s;
+        bool closed = false;
+        while (q < js.size()) {
+            if (js[q] == '\\') { q += 2; continue; }
+            if (js[q] == '"') { closed = true; break; }
             ++q;
         }
-        *vb = p + 1;
-        *ve = q;
-        return true;
+        if (!closed) return false;   // 引号未闭合：非法行，不猜
+
+        if (q - s == want && memcmp(js.data() + s, key, want) == 0) {
+            // 只有紧跟 ':' 的字符串才是 key（值后面跟的是 ',' / '}'）
+            size_t v = q + 1;
+            while (v < js.size() && (js[v] == ' ' || js[v] == '\t')) ++v;
+            if (v < js.size() && js[v] == ':') {
+                ++v;
+                while (v < js.size() && (js[v] == ' ' || js[v] == '\t')) ++v;
+                if (v >= js.size()) return false;
+                if (js[v] == '"') {
+                    size_t q2 = v + 1;
+                    while (q2 < js.size() && js[q2] != '"') {
+                        if (js[q2] == '\\') ++q2;
+                        ++q2;
+                    }
+                    if (q2 > js.size()) q2 = js.size();
+                    *vb = v + 1;
+                    *ve = q2;
+                    return true;
+                }
+                size_t q2 = v;
+                while (q2 < js.size() && js[q2] != ',' && js[q2] != '}') ++q2;
+                *vb = v;
+                *ve = q2;
+                return true;
+            }
+        }
+        i = q + 1;                   // 跳过整个字符串 token，绝不回头看它的内容
     }
-    size_t q = p;
-    while (q < js.size() && js[q] != ',' && js[q] != '}') ++q;
-    *vb = p;
-    *ve = q;
-    return true;
+    return false;
 }
+// <<<end
 
 static std::string json_str(const std::string &js, const char *key, const char *dflt = "") {
     size_t b, e;
@@ -209,6 +243,13 @@ public:
         }
         fseek(fp, 0, SEEK_END);
         long len = ftell(fp);
+        // P1-7：路径是目录/管道（ftell 返回 -1）时，(size_t)-1 会让 vector 抛
+        // length_error，main 里没 catch → std::terminate → Restart=always 抖动。
+        if (len <= 0 || len > (long)(2UL << 30)) {
+            fclose(fp);
+            logf_("vision 模型大小非法: %ld", len);
+            return false;
+        }
         fseek(fp, 0, SEEK_SET);
         std::vector<char> buf((size_t)len);
         size_t rd = fread(buf.data(), 1, (size_t)len, fp);
@@ -377,7 +418,6 @@ private:
 // 请求的上下文，把 token 增量直接推给 socket。
 struct AskCtx {
     int fd = -1;
-    std::atomic<bool> *abort_flag = nullptr;
     double t_start = 0.0;
     double t_first = 0.0;
     std::string text;
@@ -389,8 +429,68 @@ struct AskCtx {
     // 本轮是否被用户中断。callback 在 pause 后会收到 FINISH，
     // 就地发 done 时必须带上这个标记，否则客户端不知道该丢上下文。
     std::atomic<bool> aborted{false};
+    // done 是否已经下发（P1-6）。callback 的 FINISH 分支发完就置位，
+    // 让 handle_request 的中断补发路径不再多发第二条 done。
     std::atomic<bool> done_sent{false};
+    // 本轮代号（P1-5），见 g_round 的注释。
+    unsigned round = 0;
 };
+
+// ── 中断标志：按「轮次」而不是单个 bool（P1-5）─────────────────────
+// 旧实现只有一个 g_abort，ask 拿到推理锁后无条件 store(false)。于是
+// 用户在一轮请求还卡在图片编码/等锁时点「停止」，那条 abort 会被该请求
+// 拿到锁后的清理动作吃掉，表现为「点了停止但没停」。
+// 现在：每次 ask 入口领一个递增的轮次号；abort 记录「要停到哪一轮」；
+// 某轮是否被打断 = (g_abort_round >= 本轮轮次)。轮次是单调的，上一轮的
+// abort 天然不会误伤后面的轮次，因此再不需要「清标志」这个动作。
+static std::atomic<unsigned> g_round(0);          // 已分配的最大轮次号
+static std::atomic<unsigned> g_abort_round(0);    // 要停到的轮次；0 = 没停过
+
+// <<<extract:round_aborted
+// 一轮是否已被用户打断：轮次号单调，所以上一轮的 abort 不会误伤后面的轮次，
+// 反过来「等锁期间到达的 abort」也一定能命中它针对的那一轮。
+static bool round_aborted(unsigned round, unsigned abort_round) {
+    return round != 0 && abort_round >= round;
+}
+// <<<end
+
+// <<<extract:abort_target_round
+// abort 命令应该把 g_abort_round 推到哪一轮。没有任何轮次领过号（round==0）
+// 时什么也不动：否则下一轮 ask 一进来就会被误杀（点了停止之后第一个问题
+// 直接返回 aborted）。只增不减，保证早到的 abort 不会被后来的覆盖掉。
+static unsigned abort_target_round(unsigned round, unsigned prev_abort) {
+    if (round == 0) return prev_abort;
+    return prev_abort < round ? round : prev_abort;
+}
+// <<<end
+
+// <<<extract:should_send_done
+// 中断路径只在 callback 没发过 done 时才补发，否则客户端会收到两条 done
+// （P1-6：done_sent 必须真的被置位，否则这个条件恒为真）。
+static bool should_send_done(bool closed, bool done_sent) {
+    return !closed && !done_sent;
+}
+// <<<end
+
+// <<<extract:peer_uid_allowed
+// socket 对端身份校验（P1-4）：root 总能连（运维/诊断用），其余只允许
+// 唯一指定的桌面用户 uid；allow_uid == 0 表示未启用校验（开发/手动跑）。
+static bool peer_uid_allowed(uid_t peer, uid_t allow_uid) {
+    if (peer == 0) return true;
+    if (allow_uid == 0) return true;
+    return peer == allow_uid;
+}
+// <<<end
+
+// <<<extract:socket_mode
+// socket 权限档位（P1-4）。0666 时代本机任何用户都能连，能 exit 抖动服务、
+// 能 clear 别人的上下文、能靠 kv/ask 把对话读走；开启 uid 白名单后降到 0660，
+// 并把属组设成被允许用户的组（属主仍 root），这样内核在 connect() 阶段就挡掉
+// 其余用户，SO_PEERCRED 再兜一层底。
+static mode_t socket_mode_for(bool uid_listed) {
+    return uid_listed ? 0660 : 0666;
+}
+// <<<end
 
 class LlmEngine {
 public:
@@ -489,11 +589,10 @@ public:
     // 一轮推理。prompt 必须以 <image> 开头才会走多模态分支。
     bool ask(const std::string &prompt, const std::vector<float> *img,
              size_t n_img_tokens, int img_side, int keep_history,
-             int max_new, int fd, std::atomic<bool> *abort_flag, AskCtx *out_ctx) {
+             int max_new, int fd, AskCtx *out_ctx) {
         if (!handle_) return false;
 
         out_ctx->fd = fd;
-        out_ctx->abort_flag = abort_flag;
         out_ctx->t_start = now_ms();
         out_ctx->t_first = 0.0;
         out_ctx->text.clear();
@@ -576,8 +675,8 @@ private:
                     if (!send_line(ctx->fd, msg)) ctx->closed = true;
                 }
             }
-            // 用户点了「停止」
-            if (ctx->abort_flag && ctx->abort_flag->load()) {
+            // 用户点了「停止」：abort 命令把 g_abort_round 推到本轮（或更后）。
+            if (round_aborted(ctx->round, g_abort_round.load())) {
                 ctx->aborted.store(true);
                 return 1;   // 1 = pause inference
             }
@@ -585,7 +684,7 @@ private:
             // 竞态兜底：abort 可能在两次 NORMAL 之间到达，
             // 于是 FINISH 之前没有 NORMAL 回调把 aborted 置位。
             // 这里再查一次标志，否则客户端不知道要丢弃本轮。
-            if (ctx->abort_flag && ctx->abort_flag->load()) {
+            if (round_aborted(ctx->round, g_abort_round.load())) {
                 ctx->aborted.store(true);
             }
             if (!ctx->closed) {
@@ -601,6 +700,8 @@ private:
                          ab ? ",\"ctx\":\"reset\"" : "");
                 if (!send_line(ctx->fd, buf)) ctx->closed = true;
             }
+            // P1-6：一定要置位，否则 handle_request 的中断路径还会补发一条 done。
+            ctx->done_sent.store(true);
         } else if (state == RKLLM_RUN_ERROR) {
             logf_("推理过程报错");
             if (!ctx->closed) {
@@ -630,7 +731,7 @@ LlmEngine *LlmEngine::singleton_ = nullptr;
 static VisionEncoder g_vision;
 static LlmEngine g_llm;
 static std::mutex g_infer_mutex;          // 同一时刻只跑一轮推理
-static std::atomic<bool> g_abort(false);
+// 中断信号见上面的 g_round / g_abort_round（P1-5），不再用单一 bool。
 static std::atomic<bool> g_quit(false);
 static std::atomic<int> g_clients(0);   // 活跃连接线程数，退出时等它们收尾
 static int g_wake_pipe[2] = {-1, -1};   // self-pipe：信号处理里 write 唤醒 accept()
@@ -655,8 +756,12 @@ static bool handle_request(int fd, const std::string &line) {
         return send_line(fd, "{\"ev\":\"pong\"}");
     }
     if (cmd == "abort") {
-        // 不取推理锁：正在推理时也要能立刻响应
-        g_abort.store(true);
+        // 不取推理锁：正在推理时也要能立刻响应。
+        // P1-5：不再只置一个 bool（会被下个 ask 拿到锁后抹掉），而是记住
+        // 「要停到哪一轮」。正在跑的、图片编码中的、等锁的那一轮都会命中。
+        // g_round==0 说明还没有任何轮次领过号，也就没有东西可停：此时不要
+        // 把 g_abort_round 推到 1，否则下一轮 ask 一进来就会被误杀。
+        g_abort_round.store(abort_target_round(g_round.load(), g_abort_round.load()));
         g_llm.abort();
         return send_line(fd, "{\"ev\":\"aborted\"}");
     }
@@ -697,6 +802,12 @@ static bool handle_request(int fd, const std::string &line) {
         return send_line(fd, "{\"ev\":\"error\",\"msg\":\"图片问题缺少<image>标记，本轮未进行推理\"}");
     }
 
+    // P1-5：轮次号必须在 ask「入口」就领，不能等拿到推理锁再领。否则用户
+    // 在这轮还卡在图片编码（enc_mutex，最长1s+）或等 g_infer_mutex 时点「停止」，
+    // 记下的 g_abort_round 会小于本轮号，这轮白白跑完——正是旧 g_abort 被
+    // ask 无条件清零导致的那个 bug。
+    const unsigned my_round = g_round.fetch_add(1) + 1;
+
     // 图片编码不占推理锁，可以和上一轮的收尾重叠；
     // 但 vision encoder 是独占的，仍需单独串行化。
     static std::mutex enc_mutex;
@@ -720,7 +831,13 @@ static bool handle_request(int fd, const std::string &line) {
     }
 
     std::lock_guard<std::mutex> lk(g_infer_mutex);
-    g_abort.store(false);
+    // P1-5：拿到锁后不再清任何中断标志（否则会吃掉等锁期间到达的 abort）。
+    // 等锁/编码期间就被停掉：直接回 done，不要白跑一轮预填充，也不要
+    // 清 KV（这一轮根本没进上下文）。
+    if (round_aborted(my_round, g_abort_round.load())) {
+        logf_("第 %u 轮在开跑前已被中断，跳过推理", my_round);
+        return send_line(fd, "{\"ev\":\"done\",\"aborted\":1,\"ctx\":\"reset\"}");
+    }
 
     if (has_img) {
         // New pixels define a new visual scene. Repeated <image> prompts must
@@ -744,12 +861,13 @@ static bool handle_request(int fd, const std::string &line) {
     int kv_mark = g_llm.kv_size();
 
     AskCtx ctx;
+    ctx.round = my_round;
     if (!g_llm.ask(prompt, has_img ? &embed : nullptr, n_tok, side,
-                   keep_history, max_new, fd, &g_abort, &ctx)) {
+                   keep_history, max_new, fd, &ctx)) {
         return send_line(fd, "{\"ev\":\"error\",\"msg\":\"run failed\"}");
     }
 
-    bool aborted = g_abort.load();
+    bool aborted = ctx.aborted.load() || round_aborted(my_round, g_abort_round.load());
     if (aborted) {
         // 等推理真正停下再动 cache（rkllm 要求 paused 后才能操作）
         int spin = 0;
@@ -765,7 +883,7 @@ static bool handle_request(int fd, const std::string &line) {
 
         // callback 在 pause 后会收到 FINISH 并就地发一条 done（带 aborted），
         // 所以这里只在它没发过时补发，避免客户端收到两条 done。
-        if (!ctx.closed && !ctx.done_sent.load()) {
+        if (should_send_done(ctx.closed, ctx.done_sent.load())) {
             char buf[160];
             snprintf(buf, sizeof(buf),
                      "{\"ev\":\"done\",\"aborted\":1,\"ttft\":%.0f,"
@@ -800,6 +918,14 @@ static void *client_thread(void *arg) {
                 return nullptr;
             }
         }
+        // P1-3：buf 只在遇到 '\n' 时才缩，客户端持续发不带换行的数据会无界增长
+        // → bad_alloc 未捕获 → std::terminate，整个推理服务挂掉。这里量的是
+        // 「已收完若干整行之后还剩下、尚未完结的那半行」：单行 64KB 已远超正常
+        // 请求（prompt + 最长路径），超了就直接断开这条连接。
+        if (buf.size() > 64 * 1024) {
+            logf_("单行请求超长(%zu)，断开连接", buf.size());
+            break;
+        }
     }
     close(fd);
     g_clients.fetch_sub(1);
@@ -814,7 +940,9 @@ static void usage(const char *prog) {
             "  --sock PATH     Unix socket (默认 %s)\n"
             "  --ctx N         上下文长度 (默认 4096)\n"
             "  --max-new N     单轮生成上限 (默认 256)\n"
-            "  --cores N       NPU 核数提示 (默认 2)\n",
+            "  --cores N       NPU 核数提示 (默认 2)\n"
+            "  --allow-uid N   socket 只接受 root 与该 uid 的连接\n"
+            "                  (0 = 不校验，默认 0；板端 unit 传 1001)\n",
             prog,
             "/data/rkllm_qwen35/Qwen3.5-0.8B_w4a16_g128_rk3576.rkllm",
             "/data/rkllm_qwen35/Qwen3.5-0.8B_vision_rk3576.rknn",
@@ -828,6 +956,12 @@ int main(int argc, char **argv) {
     int ctx_len = 4096;
     int max_new = 256;
     int cores = 2;
+    // P1-4：socket 对端 uid 白名单。0 = 不校验（保留 0666，兼容手动运行）。
+    // 板端 systemd unit 显式传 --allow-uid 1001（桌面用户 w），此时 socket
+    // 降到 0660 并只放行 root/w。为什么不做自动探测：run.sh/UI 是 root 启动
+    // runuser -u w，服务端看不到可靠的环境变量，且自动探测错了就直接把
+    // 桌面 UI 屏蔽了；显式参数由 unit 固定下来，可知可验。
+    int allow_uid = 0;
 
     for (int i = 1; i < argc; ++i) {
         std::string a = argv[i];
@@ -844,6 +978,7 @@ int main(int argc, char **argv) {
         else if (a == "--ctx") ctx_len = atoi(next("--ctx").c_str());
         else if (a == "--max-new") max_new = atoi(next("--max-new").c_str());
         else if (a == "--cores") cores = atoi(next("--cores").c_str());
+        else if (a == "--allow-uid") allow_uid = atoi(next("--allow-uid").c_str());
         else if (a == "-h" || a == "--help") { usage(argv[0]); return 0; }
         else { fprintf(stderr, "未知参数: %s\n", a.c_str()); usage(argv[0]); return 2; }
     }
@@ -886,13 +1021,34 @@ int main(int argc, char **argv) {
         logf_("bind %s 失败: %s", sock_path.c_str(), strerror(errno));
         return 1;
     }
-    // 让桌面普通用户也能连（服务以 root 启动时 socket 默认 0755 但属主 root）
-    chmod(sock_path.c_str(), 0666);
+    // P1-4：0660 + 属组给被允许的桌面用户（实测 root:root 的 0660 会把
+    // uid 1001 直接挡在 connect() 外面，UI 就连不上了）。属主保持 root，
+    // 组设成 w 的 gid=1001：内核按「属主/属组/其他」逐级判定，w 命中组位。
+    bool listed = allow_uid > 0;
+    if (listed) {
+        struct passwd *pw = getpwuid((uid_t)allow_uid);
+        int rc;
+        if (pw) {
+            rc = chown(sock_path.c_str(), 0, pw->pw_gid);
+        } else {
+            // 板端没有这个 uid 的 passwd 条目时，退而把属主改成它（0660 的属主位同样可连）
+            rc = chown(sock_path.c_str(), (uid_t)allow_uid, (gid_t)-1);
+        }
+        if (rc < 0) {
+            // 不能让「降权限」把桌面用户挡在外面：chown 失败就退回 0666，
+            // 准入完全交给后面的 SO_PEERCRED（内核记录的 uid，不可伪造）。
+            logf_("警告: chown %s 失败: %s，退回 0666 并仅靠 SO_PEERCRED 准入",
+                  sock_path.c_str(), strerror(errno));
+            listed = false;
+        }
+    }
+    chmod(sock_path.c_str(), socket_mode_for(listed));
     if (listen(srv, 8) < 0) {
         logf_("listen 失败: %s", strerror(errno));
         return 1;
     }
-    logf_("监听 %s", sock_path.c_str());
+    logf_("监听 %s (mode=0%o, allow_uid=%d)", sock_path.c_str(),
+          (unsigned)socket_mode_for(listed), allow_uid);
 
     while (!g_quit.load()) {
         // poll 而非裸 accept：信号只写 self-pipe，让 poll 立即返回并看到 g_quit。
@@ -919,6 +1075,26 @@ int main(int argc, char **argv) {
             if (errno == EINTR) continue;
             logf_("accept 失败: %s", strerror(errno));
             break;
+        }
+        // P1-4：按对端真实 uid 做准入。0666 时代本机任何用户都能
+        // {"cmd":"exit"} 抖动服务、{"cmd":"clear"} 清别人上下文、
+        // 或用 kv/ask 把对话读走；SO_PEERCRED 拿的是内核记录的
+        // connect() 时身份，不可伪造（不像 SO_PEERNAME/环境变量）。
+        if (allow_uid > 0) {
+            struct ucred cred;
+            memset(&cred, 0, sizeof(cred));
+            socklen_t cl = sizeof(cred);
+            if (getsockopt(fd, SOL_SOCKET, SO_PEERCRED, &cred, &cl) < 0) {
+                logf_("SO_PEERCRED 失败: %s，拒绝连接", strerror(errno));
+                close(fd);
+                continue;
+            }
+            if (!peer_uid_allowed(cred.uid, (uid_t)allow_uid)) {
+                logf_("拒绝 uid=%u 的连接（仅允许 root 与 uid=%d）",
+                      (unsigned)cred.uid, allow_uid);
+                close(fd);
+                continue;
+            }
         }
         pthread_t th;
         if (pthread_create(&th, nullptr, client_thread, (void *)(intptr_t)fd) == 0) {

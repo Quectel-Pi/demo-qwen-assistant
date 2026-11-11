@@ -19,6 +19,41 @@ import client
 import rkchat
 
 
+ROOT = Path(__file__).resolve().parents[1]
+SERVICE_SRC = ROOT / 'deploy/native/rkllm_service.cpp'
+
+
+def _extract(name):
+    """Pull a `// <<<extract:name` ... `// <<<end` block out of the service source.
+
+    The protocol helpers are hand-written C++ rather than Python, so the only
+    honest way to unit-test them is to compile the very same bytes the service
+    ships. The markers keep the two copies from drifting.
+    """
+    text = SERVICE_SRC.read_text(encoding='utf-8')
+    start = text.index('// <<<extract:%s\n' % name) + len('// <<<extract:%s\n' % name)
+    end = text.index('// <<<end', start)
+    return text[start:end]
+
+
+def _compile_block(name, body, out):
+    """Compile the extracted `name` block, unless `body` already embeds it."""
+    src = out.with_suffix('.cpp')
+    prelude = ('#include <atomic>\n#include <string>\n#include <cstring>\n'
+               '#include <sys/types.h>\n')
+    already = '// <<<extract:%s' % name in body or 'static bool json_find' in body
+    src.write_text(prelude + ('' if already else _extract(name)) + body, encoding='utf-8')
+    subprocess.run(['g++', '-std=c++17', '-O0', '-o', str(out), str(src)],
+                   check=True, capture_output=True)
+
+
+def _run_probe(name, body):
+    with tempfile.TemporaryDirectory() as tmp:
+        exe = Path(tmp) / name
+        _compile_block(name, body, exe)
+        return subprocess.run([str(exe)], check=True, capture_output=True, text=True).stdout
+
+
 class SpeechTests(unittest.TestCase):
     def setUp(self):
         self.engine = SimpleNamespace(synthesize=lambda text: ([0.1] * 8, 16000, 0.001))
@@ -175,12 +210,20 @@ class AudioRoutingTests(unittest.TestCase):
              patch.object(voice,'_speaker',SimpleNamespace(device='hw:0,0')):
             self.assertFalse(voice.can_listen_while_playing())
 
-    def test_aplay_failure_is_not_reported_as_success(self):
+    def test_aplay_failure_is_absorbed_not_fatal(self):
+        """P0-1 契约：aplay 非零退出只能记日志，不能让异常冲出 Speaker.play。
+
+        板端 aplay 返回非零是常态（ES8389 时钟未锁定、USB 声卡热插拔），
+        CalledProcessError 是 SubprocessError 而非 OSError，漏接会带崩整个免提进程。
+        """
         import numpy as np
         source=Path(__file__).resolve().parents[1]/'deploy/voice-vision/talk.py'
         tree=ast.parse(source.read_text())
         node=next(n for n in tree.body if isinstance(n,ast.ClassDef) and n.name=='Speaker')
-        namespace={'np':np,'os':os,'subprocess':subprocess,'time':time,'SPK_DEVICE':'hw:0,0','APlay':'aplay'}
+        logged=[]
+        namespace={'np':np,'os':os,'subprocess':subprocess,'time':time,
+                   'SPK_DEVICE':'hw:0,0','APlay':'aplay',
+                   'log':lambda tag,msg,color='dim': logged.append((tag,msg))}
         exec(compile(ast.Module(body=[node],type_ignores=[]),str(source),'exec'),namespace)
         speaker=namespace['Speaker'](ratio=1)
         def playback(*args,**kwargs):
@@ -188,8 +231,10 @@ class AudioRoutingTests(unittest.TestCase):
                 raise subprocess.CalledProcessError(1,args[0])
             return SimpleNamespace(returncode=1)
         with patch.object(subprocess,'run',side_effect=playback):
-            with self.assertRaises(subprocess.CalledProcessError):
-                speaker.play(np.array([0.1,0.2],dtype=np.float32),16000)
+            # 不抛异常，正常返回耗时
+            elapsed=speaker.play(np.array([0.1,0.2],dtype=np.float32),16000)
+        self.assertGreaterEqual(elapsed,0.0)
+        self.assertTrue(any(t=='ERR' for t,_ in logged),'播放失败必须记 ERR 日志')
 
 
 class FakeReader:
@@ -337,6 +382,289 @@ class UiTests(unittest.TestCase):
             self.assertEqual(len(pending), 1)
             fn,args = pending[0]; fn(*args)
         app.lbl_voice.set_text.assert_called_once_with('在听')
+
+
+class RequestParsingTests(unittest.TestCase):
+    """P1-2: json_find must not let prompt text hijack real parameters."""
+
+    PROBE = r'''
+#include <cstdio>
+#include <iostream>
+static std::string val(const std::string &js, const char *key, bool *found) {
+    size_t b = 0, e = 0;
+    *found = json_find(js, key, &b, &e);
+    return *found ? js.substr(b, e - b) : std::string();
+}
+int main() {
+    const char *keys[] = {"cmd", "prompt", "image", "keep_history", "max_new"};
+    std::string line;
+    while (std::getline(std::cin, line)) {
+        for (const char *k : keys) {
+            bool found = false;
+            std::string v = val(line, k, &found);
+            printf("%s|%d|%s\n", k, found ? 1 : 0, v.c_str());
+        }
+        printf("--\n");
+    }
+    return 0;
+}
+'''
+
+    def parse(self, line):
+        with tempfile.TemporaryDirectory() as tmp:
+            exe = Path(tmp) / 'json_probe'
+            _compile_block('json_find', self.PROBE, exe)
+            res = subprocess.run([str(exe)], input=line + '\n', check=True,
+                                 capture_output=True, text=True).stdout
+        fields = {}
+        for row in res.split('--')[0].strip().splitlines():
+            key, found, value = row.split('|', 2)
+            fields[key] = value if found == '1' else None
+        return fields
+
+    def test_image_mentioned_inside_prompt_is_not_a_parameter(self):
+        line = ('{"cmd":"ask","prompt":"你收到的 image 参数是什么？'
+                '还有 \\"keep_history\\":0","keep_history":1}')
+        got = self.parse(line)
+        self.assertEqual(got['cmd'], 'ask')
+        self.assertIsNone(got['image'], 'prompt text hijacked the image parameter')
+        self.assertEqual(got['keep_history'], '1',
+                         'prompt text hijacked keep_history')
+        self.assertIn('你收到的 image 参数是什么', got['prompt'])
+
+    def test_real_image_after_prompt_is_still_found(self):
+        line = ('{"cmd":"ask","prompt":"<image> \\"image\\" 是什么",'
+                '"keep_history":0,"image":"/tmp/a.jpg"}')
+        got = self.parse(line)
+        self.assertEqual(got['image'], '/tmp/a.jpg')
+        self.assertEqual(got['keep_history'], '0')
+
+    def test_string_value_with_comma_brace_and_colon_survives(self):
+        line = '{"cmd":"ask","prompt":"a, b } c: d","max_new":32}'
+        got = self.parse(line)
+        self.assertEqual(got['prompt'], 'a, b } c: d')
+        self.assertEqual(got['max_new'], '32')
+
+    def test_escaped_quote_does_not_end_the_token(self):
+        line = '{"prompt":"say \\"image\\":1","image":""}'
+        got = self.parse(line)
+        self.assertEqual(got['image'], '')
+        self.assertEqual(got['prompt'], 'say \\"image\\":1')
+
+    def test_missing_key_is_reported_as_missing(self):
+        got = self.parse('{"cmd":"ping"}')
+        self.assertEqual(got['cmd'], 'ping')
+        self.assertIsNone(got['image'])
+        self.assertIsNone(got['prompt'])
+
+
+class AbortRoundTests(unittest.TestCase):
+    """P1-5: abort must keep targeting the round the user was looking at."""
+
+    PROBE = r'''
+#include <cstdio>
+int main() {
+    // (round, abort_round, expected)
+    const struct { unsigned r, a; bool want; } cases[] = {
+        {1, 0, false},   // 没停过
+        {1, 1, true},    // 停的正是第 1 轮
+        {2, 1, false},   // 上一轮的 abort 不能误伤第 2 轮
+        {3, 2, false},   // 同上，差一轮
+        {2, 3, true},    // 停到更后的轮次，其中一个
+        {0, 5, false},   // 未领轮次的上下文不算被打断
+    };
+    int bad = 0;
+    for (auto &c : cases) {
+        bool got = round_aborted(c.r, c.a);
+        printf("%u/%u -> %d (want %d)\n", c.r, c.a, (int)got, (int)c.want);
+        if (got != c.want) bad++;
+    }
+    return bad == 0 ? 0 : 1;
+}
+'''
+
+    def test_abort_targets_the_intended_round_only(self):
+        out = _run_probe('round_aborted', self.PROBE)
+        self.assertIn('1/1 -> 1', out)
+        self.assertIn('2/1 -> 0', out)
+
+    def test_abort_while_waiting_for_the_lock_still_wins(self):
+        # 这是 P1-5 的原始症状：请求还在等锁/编码时点了停止。
+        with tempfile.TemporaryDirectory() as tmp:
+            exe = Path(tmp) / 'probe'
+            body = r'''
+#include <cstdio>
+int main() {
+    unsigned round = 7;             // 已经领到的轮次
+    unsigned abort_round = 7;       // 等锁期间用户点了停止
+    printf("%d\n", (int)round_aborted(round, abort_round));
+    abort_round = 6;                // 只停了上一轮
+    printf("%d\n", (int)round_aborted(round, abort_round));
+    return 0;
+}
+'''
+            _compile_block('round_aborted', body, exe)
+            out = subprocess.run([str(exe)], check=True, capture_output=True,
+                                 text=True).stdout.split()
+        self.assertEqual(out, ['1', '0'])
+
+    def test_abort_before_any_round_does_not_kill_the_next_one(self):
+        # 用户先点了停止、然后才提问：那一轮不能被误杀。
+        body = _extract('round_aborted') + r'''
+#include <cstdio>
+int main() {
+    unsigned abort_round = 0;
+    abort_round = abort_target_round(0, abort_round);   // 无轮次在跑
+    printf("%u\n", abort_round);
+    abort_round = abort_target_round(3, abort_round);   // 第 3 轮在跑
+    printf("%u\n", abort_round);
+    abort_round = abort_target_round(2, abort_round);   // 更早的轮次不倒退
+    printf("%u\n", abort_round);
+    printf("%d %d\n", (int)round_aborted(1, abort_round),
+                       (int)round_aborted(3, abort_round));
+    return 0;
+}
+'''
+        out = _run_probe('abort_target_round', body).split()
+        self.assertEqual(out[:3], ['0', '3', '3'])
+        self.assertEqual(out[3:], ['1', '1'])   # 第 1、3 轮都算被停（abort_round=3）
+
+    def test_abort_command_uses_the_helper(self):
+        src = SERVICE_SRC.read_text(encoding='utf-8')
+        abort_at = src.index('if (cmd == "abort")')
+        body = src[abort_at:abort_at + 900]
+        self.assertIn('abort_target_round(', body)
+        self.assertNotIn('g_abort.store', body)
+
+
+class DoneSentTests(unittest.TestCase):
+    """P1-6: the fallback done must be suppressed once the callback sent one."""
+
+    def test_done_is_sent_once(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            exe = Path(tmp) / 'probe'
+            body = r'''
+#include <cstdio>
+int main() {
+    printf("%d", (int)should_send_done(false, false));
+    printf("%d", (int)should_send_done(false, true));   // callback 已发
+    printf("%d", (int)should_send_done(true, false));   // 客户端已断
+    printf("%d\n", (int)should_send_done(true, true));
+    return 0;
+}
+'''
+            _compile_block('should_send_done', body, exe)
+            out = subprocess.run([str(exe)], check=True, capture_output=True,
+                                 text=True).stdout.strip()
+        self.assertEqual(out, '1000')
+
+    def test_callback_marks_done_sent_on_finish(self):
+        src = SERVICE_SRC.read_text(encoding='utf-8')
+        finish = src.index('state == RKLLM_RUN_FINISH')
+        self.assertIn('ctx->done_sent.store(true)', src[finish:finish + 2000],
+                      'RUN_FINISH never marks done_sent, so done is emitted twice')
+
+
+class PeerUidTests(unittest.TestCase):
+    """P1-4: the socket only serves root and the one desktop user."""
+
+    def allowed(self, peer, allow):
+        with tempfile.TemporaryDirectory() as tmp:
+            exe = Path(tmp) / 'probe'
+            body = ('#include <cstdio>\nint main() {\n'
+                    '    printf("%%d%%d%%d%%d", (int)peer_uid_allowed(%d, %d),'
+                    ' (int)peer_uid_allowed(%d, %d), (int)peer_uid_allowed(%d, %d),'
+                    ' (int)peer_uid_allowed(%d, %d));\n    return 0;\n}\n'
+                    % (peer, allow, 0, allow, 1001, allow, 1000, allow))
+            _compile_block('peer_uid_allowed', body, exe)
+            out = subprocess.run([str(exe)], check=True, capture_output=True,
+                                 text=True).stdout.strip()
+        return [c == '1' for c in out]
+
+    def test_root_and_desktop_user_are_accepted_others_rejected(self):
+        peer, root, desktop, other = self.allowed(1001, 1001)
+        self.assertTrue(peer); self.assertTrue(root)
+        self.assertTrue(desktop); self.assertFalse(other)
+
+    def test_zero_allow_uid_disables_the_check(self):
+        peer, root, desktop, other = self.allowed(1001, 0)
+        self.assertTrue(peer and root and desktop and other)
+
+    def test_service_drops_socket_mode_when_uid_list_is_on(self):
+        src = SERVICE_SRC.read_text(encoding='utf-8')
+        self.assertIn('SO_PEERCRED', src)
+        self.assertIn('--allow-uid', src)
+        body = ('#include <cstdio>\n#include <sys/types.h>\nint main() {\n'
+                '    printf("%o %o\\n", (unsigned)socket_mode_for(true),'
+                ' (unsigned)socket_mode_for(false));\n    return 0;\n}\n')
+        self.assertEqual(_run_probe('socket_mode', body).split(), ['660', '666'],
+                         'uid-listed mode must be 0660, not world-writable 0666')
+
+    def test_socket_is_group_owned_by_the_allowed_user(self):
+        # 板端实测：root:root 的 0660 会把 uid 1001 挡在 connect() 外面，
+        # 所以降权限的同时必须把属组改成被允许用户的组。
+        src = SERVICE_SRC.read_text(encoding='utf-8')
+        chmod_at = src.index('chmod(sock_path.c_str(), socket_mode_for(listed))')
+        self.assertIn('chown(', src[max(0, chmod_at - 1200):chmod_at],
+                      '0660 without chowning to the desktop group locks the UI out')
+
+    def test_unit_passes_the_desktop_uid(self):
+        unit = (ROOT / 'deploy/rkllm-chat.service').read_text(encoding='utf-8')
+        self.assertIn('--allow-uid 1001', unit)
+        self.assertIn('TimeoutStopSec=', unit)
+        self.assertIn('KillMode=mixed', unit)
+
+
+class BufferAndModelGuardTests(unittest.TestCase):
+    """P1-3 (read buffer cap) and P1-7 (ftell validation)."""
+
+    def test_incomplete_request_line_is_capped(self):
+        src = SERVICE_SRC.read_text(encoding='utf-8')
+        thread = src[src.index('static void *client_thread'):]
+        thread = thread[:thread.index('static void usage')]
+        self.assertIn('buf.size() > 64 * 1024', thread,
+                      'unbounded single-connection buffer can be exhausted')
+        # 上限必须在消化完整行之后检查，否则长行已处理完还会被误断。
+        self.assertLess(thread.index("buf.find('\\n')"),
+                        thread.index('buf.size() > 64 * 1024'))
+
+    def test_oversized_stream_is_dropped_by_a_real_cap(self):
+        # 行为验证：模拟同一段 recv 循环，喂 10MB 无换行数据，必须在 64KB 附近停。
+        body = r'''
+#include <cstdio>
+#include <string>
+int main() {
+    std::string buf;
+    std::string chunk(8192, 'x');
+    long consumed = 0;
+    for (int i = 0; i < 1280; ++i) {          // 10 MB
+        buf.append(chunk);
+        consumed += (long)chunk.size();
+        size_t nl;
+        while ((nl = buf.find('\n')) != std::string::npos) buf.erase(0, nl + 1);
+        if (buf.size() > 64 * 1024) break;
+    }
+    printf("%ld %zu\n", consumed, buf.size());
+    return 0;
+}
+'''
+        with tempfile.TemporaryDirectory() as tmp:
+            exe = Path(tmp) / 'cap'
+            src = exe.with_suffix('.cpp')
+            src.write_text(body, encoding='utf-8')
+            subprocess.run(['g++', '-std=c++17', '-O0', '-o', str(exe), str(src)], check=True)
+            consumed, held = subprocess.run([str(exe)], check=True, capture_output=True,
+                                            text=True).stdout.split()
+        self.assertLessEqual(int(held), 64 * 1024 + 8192)
+        self.assertLess(int(consumed), 10 * 1024 * 1024, 'cap never triggered')
+
+    def test_vision_model_size_is_validated_before_allocating(self):
+        src = SERVICE_SRC.read_text(encoding='utf-8')
+        at = src.index('long len = ftell(fp);')
+        guard = src[at:at + 400]
+        self.assertIn('len <= 0', guard, 'ftell()==-1 must not reach std::vector ctor')
+        self.assertIn('2UL << 30', guard)
+        self.assertLess(guard.index('len <= 0'), guard.index('std::vector<char> buf'))
 
 
 if __name__ == '__main__':

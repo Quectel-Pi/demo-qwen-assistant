@@ -42,6 +42,12 @@ _tts_lock = threading.Lock()
 _playback_lock = threading.Lock()
 # ES8389 capture and playback share a clock and must not run together.
 _half_duplex_lock = threading.Lock()
+# 板端只有一个采集设备（即使是 USB 麦，ALSA 也不允许两个 arecord 同时打开）：
+# _voice_loop 的 listen_once 和朗读期间的 listen_for_barge_in 是两个线程，
+# 必须靠这把锁串行化 _mic.open()/close()，否则后开的那个直接
+# "Device or resource busy"。不能用 _half_duplex_lock：用 USB 麦时
+# can_listen_while_playing() 为 True，那把锁整个被跳过。
+_mic_lock = threading.Lock()
 _engine = None
 _mic = None
 _speaker = None
@@ -234,7 +240,7 @@ class VoiceIO:
                 on_state("语音不可用: %s" % message)
             return None
         guard = nullcontext() if can_listen_while_playing() else _half_duplex_lock
-        with guard:
+        with guard, _mic_lock:
             if self._stop_flag.is_set():
                 return None
             return self._listen_once(on_state)
@@ -366,39 +372,46 @@ class VoiceIO:
         ok, _ = ensure_ready()
         if not ok:
             return False
-        try:
-            _mic.open()
-        except Exception:
+        # 和 listen_once 串行化设备操作；锁被别的线程占着时最多等这么久，
+        # 拿不到就当本轮没有打断（用户还能再开口），不能把朗读线程卡死。
+        if not _mic_lock.acquire(timeout=2.0):
             return False
-        self._recording = True
-        hist: list[int] = []          # 最近 window 帧是否过阈（1/0）
         try:
-            # 丢掉开麦瞬态，否则每次开始监听都会被自己打断
-            t_settle = time.time() + settle
-            while time.time() < t_settle and not stop_event.is_set():
-                if _mic.read(FRAME, timeout=0.2) is None:
-                    time.sleep(0.02)
-
-            while not stop_event.is_set():
-                frame = _mic.read(FRAME, timeout=0.2)
-                if frame is None:
-                    continue
-                try:
-                    rms = float((frame ** 2).mean()) ** 0.5
-                except Exception:
-                    continue
-                hist.append(1 if rms > threshold else 0)
-                if len(hist) > window:
-                    hist.pop(0)
-                # 窗口填满后才判定，避免刚开麦就误报
-                if len(hist) >= window and sum(hist) / len(hist) >= ratio:
-                    return True
-        finally:
-            self._recording = False
             try:
-                _mic.close()
+                _mic.open()
             except Exception:
-                pass
+                return False
+            self._recording = True
+            hist: list[int] = []          # 最近 window 帧是否过阈（1/0）
+            try:
+                # 丢掉开麦瞬态，否则每次开始监听都会被自己打断
+                t_settle = time.time() + settle
+                while time.time() < t_settle and not stop_event.is_set():
+                    if _mic.read(FRAME, timeout=0.2) is None:
+                        time.sleep(0.02)
+
+                while not stop_event.is_set():
+                    frame = _mic.read(FRAME, timeout=0.2)
+                    if frame is None:
+                        continue
+                    try:
+                        rms = float((frame ** 2).mean()) ** 0.5
+                    except Exception:
+                        continue
+                    hist.append(1 if rms > threshold else 0)
+                    if len(hist) > window:
+                        hist.pop(0)
+                    # 窗口填满后才判定，避免刚开麦就误报
+                    if len(hist) >= window and sum(hist) / len(hist) >= ratio:
+                        return True
+            finally:
+                self._recording = False
+                try:
+                    _mic.close()
+                except Exception:
+                    pass
+        finally:
+            _mic_lock.release()
         return False
 
     # ── 朗读 ────────────────────────────────────────────────────

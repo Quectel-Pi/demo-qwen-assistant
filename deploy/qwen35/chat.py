@@ -139,27 +139,42 @@ class Engine:
             cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT, bufsize=0, cwd=HERE, env=env,
         )
-        self._sync_prompt(timeout=180)
+        # 超时/异常时必须回收子进程，否则 self.proc 会被下一次 start() 覆盖，
+        # 旧 demo 常驻 ~1.5GB + 占 NPU，反复 /image 会 OOM。
+        try:
+            self._sync_prompt(timeout=180)
+        except BaseException:
+            self.stop()
+            raise
         self.load_secs = time.monotonic() - t0
 
     def stop(self) -> None:
-        if self.proc is None:
+        proc, self.proc = self.proc, None   # 先摘下引用，避免重入/半死状态
+        if proc is None:
             return
         try:
-            if self.proc.poll() is None:
-                self.proc.stdin.write(b"exit\n")
-                self.proc.stdin.flush()
+            stdin = proc.stdin
+            if proc.poll() is None and stdin is not None and not stdin.closed:
+                stdin.write(b"exit\n")
+                stdin.flush()
         except (BrokenPipeError, OSError, ValueError):
             pass
         try:
-            self.proc.wait(timeout=3)
+            proc.wait(timeout=3)
         except subprocess.TimeoutExpired:
-            self.proc.kill()
+            proc.kill()
             try:
-                self.proc.wait(timeout=3)
+                proc.wait(timeout=3)
             except subprocess.TimeoutExpired:
                 pass
-        self.proc = None
+        # 无论是否正常退出都关掉管道，否则每次换图泄漏 2 个 fd
+        for f in (proc.stdin, proc.stdout):
+            if f is None:
+                continue
+            try:
+                f.close()
+            except (OSError, ValueError):
+                pass
 
     @property
     def alive(self) -> bool:
@@ -341,7 +356,7 @@ HELP = """\
   Ctrl-C  中断当前生成（会重启引擎，下一问需重新加载模型）
   ↑ ↓     翻历史提问（存在 ~/.qwen35_history）
   0 / 1   直接用 demo 原生预设问题（英文 / 中文）
-  !<命令> 执行 shell 命令，如 !free -m
+  !<命令> 在 shell 里执行命令（等价于直接跑 shell，无沙箱），如 !free -m
 """
 
 
@@ -626,8 +641,16 @@ class Session:
                 if not line:
                     continue
                 if line.startswith("!"):
-                    if line[1:].strip():
-                        os.system(line[1:])
+                    cmd = line[1:].strip()
+                    if cmd:
+                        # 等价于直接跑 shell（无沙箱）；至少把退出码告诉用户
+                        status = os.system(cmd)
+                        try:
+                            rc = os.waitstatus_to_exitcode(status)
+                        except ValueError:
+                            rc = status
+                        if rc != 0:
+                            print(self.p(f"  退出码 {rc}", "dim"))
                     continue
                 if line.startswith("/"):
                     if not self.handle_command(line):

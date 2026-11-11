@@ -28,6 +28,7 @@ import re
 import select
 import subprocess
 import sys
+import tempfile
 import time
 import unicodedata
 import wave
@@ -205,20 +206,45 @@ class Speaker:
         """播一段已知时长测试音，量出实际速率倍数。已校准过就直接用缓存。"""
         if os.path.exists(SPEAKER_K_CACHE) and not os.environ.get("SPEAKER_RECAL"):
             return self.ratio
-        tone = "/tmp/.talk_cal.wav"
-        subprocess.run(["sox", "-n", "-r", "22050", "-c", "1", tone,
-                        "synth", "4", "sine", "440"],
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        t = time.monotonic()
-        subprocess.run(["aplay", "-D", self.device, "-q", tone],
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=60)
-        dur = time.monotonic() - t
-        if 0.3 < dur < 60:
-            self.ratio = 4.0 / dur
-            if save:
+        tone_fd, tone = tempfile.mkstemp(prefix="talk-cal-", suffix=".wav")
+        os.close(tone_fd)
+        try:
+            gen = subprocess.run(
+                ["sox", "-n", "-r", "22050", "-c", "1", tone,
+                 "synth", "4", "sine", "440"],
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            if gen.returncode != 0:
+                log("WARN", f"校准音生成失败(sox rc={gen.returncode})，沿用 ratio={self.ratio:.3f}", "yellow")
+                return self.ratio
+            t = time.monotonic()
+            play = subprocess.run(["aplay", "-D", self.device, "-q", tone],
+                                  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                                  timeout=60)
+            dur = time.monotonic() - t
+        finally:
+            try:
+                os.unlink(tone)
+            except OSError:
+                pass
+
+        if play.returncode != 0:
+            log("WARN", f"校准播放失败(aplay rc={play.returncode})，沿用 ratio={self.ratio:.3f}", "yellow")
+            return self.ratio
+        if not (0.3 < dur < 60):
+            log("WARN", f"校准时长异常 {dur:.2f}s，沿用 ratio={self.ratio:.3f}", "yellow")
+            return self.ratio
+
+        self.ratio = 4.0 / dur
+        if save:
+            # mkstemp + os.replace 保证原子，避免读到半截文件
+            fd, tmp = tempfile.mkstemp(prefix=".talk_speaker_k-", dir=os.path.dirname(SPEAKER_K_CACHE) or ".")
+            try:
+                with os.fdopen(fd, "w", encoding="ascii") as fh:
+                    fh.write(f"{self.ratio:.4f}")
+                os.replace(tmp, SPEAKER_K_CACHE)
+            except OSError:
                 try:
-                    with open(SPEAKER_K_CACHE, "w", encoding="ascii") as fh:
-                        fh.write(f"{self.ratio:.4f}")
+                    os.unlink(tmp)
                 except OSError:
                     pass
         return self.ratio
@@ -318,24 +344,31 @@ def grab_frame(dev: str, out_path: str, size: str = "640x480") -> bool:
     err1 = (r.stderr or "").strip().splitlines()[-1:] or [""]
 
     # 路线 2：v4l2-ctl 拿原始 NV12，再转 JPEG
-    raw = "/tmp/.frame.raw"
+    # 用 mkstemp 避免多实例互踩 /tmp/.frame.raw；无论成败都在 finally 里清理
+    fd, raw = tempfile.mkstemp(prefix="talk-frame-", suffix=".raw")
+    os.close(fd)
     w, h = size.split("x")
-    r2 = subprocess.run(
-        ["v4l2-ctl", "-d", dev,
-         f"--set-fmt-video=width={w},height={h},pixelformat=NV12",
-         "--stream-mmap", "--stream-count=1", f"--stream-to={raw}"],
-        capture_output=True, text=True, timeout=25,
-    )
-    if r2.returncode == 0 and os.path.exists(raw) and os.path.getsize(raw) > 0:
-        r3 = subprocess.run(
-            ["ffmpeg", "-hide_banner", "-loglevel", "error",
-             "-f", "rawvideo", "-pix_fmt", "nv12", "-s", size,
-             "-i", raw, "-frames:v", "1", "-y", out_path],
+    try:
+        r2 = subprocess.run(
+            ["v4l2-ctl", "-d", dev,
+             f"--set-fmt-video=width={w},height={h},pixelformat=NV12",
+             "--stream-mmap", "--stream-count=1", f"--stream-to={raw}"],
             capture_output=True, text=True, timeout=25,
         )
-        os.unlink(raw)
-        if r3.returncode == 0 and os.path.exists(out_path):
-            return True
+        if r2.returncode == 0 and os.path.exists(raw) and os.path.getsize(raw) > 0:
+            r3 = subprocess.run(
+                ["ffmpeg", "-hide_banner", "-loglevel", "error",
+                 "-f", "rawvideo", "-pix_fmt", "nv12", "-s", size,
+                 "-i", raw, "-frames:v", "1", "-y", out_path],
+                capture_output=True, text=True, timeout=25,
+            )
+            if r3.returncode == 0 and os.path.exists(out_path):
+                return True
+    finally:
+        try:
+            os.unlink(raw)
+        except OSError:
+            pass
 
     log("ERR", f"抓帧失败: ffmpeg={err1[0]!r} v4l2-ctl={r2.stderr.strip()[:80]!r}", "red")
     return False

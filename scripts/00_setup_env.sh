@@ -5,8 +5,8 @@ ROOT=$(cd "$(dirname "$0")/.." && pwd)
 VENV="$ROOT/.venv310"
 TS="https://pypi.tuna.tsinghua.edu.cn/simple"
 TORCH_IDX="https://download.pytorch.org/whl/cpu"
-# download.pytorch.org 在本机直连会 SSL 中断，走本地代理；无代理时置空
-PIP_PROXY="${PIP_PROXY-http://127.0.0.1:7897}"
+# download.pytorch.org 在本机直连会 SSL 中断；无代理时置空，需要代理请显式导出 PIP_PROXY
+PIP_PROXY="${PIP_PROXY-}"
 PROXY_OPT=()
 [ -n "$PIP_PROXY" ] && PROXY_OPT=(--proxy "$PIP_PROXY")
 

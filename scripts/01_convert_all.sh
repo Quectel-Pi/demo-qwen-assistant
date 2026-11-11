@@ -31,28 +31,35 @@ fi
 ln -sfn llm_inputs.json "$DEMO/data/inputs.json"
 
 echo "== [2/5] LLM -> rkllm ($DTYPE / $TARGET / npu=$CORES / opt=$OPT) =="
+# 注意：管道末尾的 grep 是过滤器，不匹配不算失败；但 export_rkllm.py 非零必须失败。
+# 用 PIPESTATUS[0] 取 python 的退出码（脚本已开 pipefail，这里显式判更直观）。
 "$PY" "$ROOT/scripts/export_rkllm.py" \
   --path "$MODEL" --target-platform "$TARGET" --num_npu_core "$CORES" \
   --quantized_dtype "$DTYPE" --optimization_level "$OPT" \
-  --device cpu --dataset data/inputs.json 2>&1 | tee "$LOGS/02_rkllm.log" | grep -aE "^OK ->|failed|Error" || true
+  --device cpu --dataset data/inputs.json 2>&1 | tee "$LOGS/02_rkllm.log" | grep -aE "^OK ->|failed|Error" \
+  || [ "${PIPESTATUS[0]}" = 0 ]
 
 if [ "$SKIP_VISION" = "0" ]; then
   echo "== [3/5] Vision -> onnx (${VISION_SIZE}x${VISION_SIZE}) =="
   "$PY" export/export_vision.py --path "$MODEL" --model_name qwen3.5 \
     --height "$VISION_SIZE" --width "$VISION_SIZE" --batch_size 1 --device cpu \
-    2>&1 | tee "$LOGS/03_onnx.log" | grep -aE "Exported to|Output shape|Error" || true
+    2>&1 | tee "$LOGS/03_onnx.log" | grep -aE "Exported to|Output shape|Error" \
+    || [ "${PIPESTATUS[0]}" = 0 ]
 
   echo "== [4/5] Vision onnx -> rknn ($TARGET) =="
   "$PY" export/export_vision_rknn.py --path "./onnx/qwen3.5_vision.onnx" \
     --model_name qwen3.5 --height "$VISION_SIZE" --width "$VISION_SIZE" \
     --batch_size 1 --target-platform "$TARGET" \
-    2>&1 | tee "$LOGS/04_rknn.log" | grep -aE "rknn building done|Error" || true
+    2>&1 | tee "$LOGS/04_rknn.log" | grep -aE "rknn building done|Error" \
+    || [ "${PIPESTATUS[0]}" = 0 ]
 else
   echo "== [3-4/5] 跳过 Vision =="
 fi
 
 echo "== [5/5] 汇总到 $OUT =="
-cp -f "$DEMO/rkllm/"*.rkllm "$OUT/" 2>/dev/null || true
-cp -f "$DEMO/rknn/"*vision*.rknn "$OUT/" 2>/dev/null || true
+cp -f "$DEMO/rkllm/"*.rkllm "$OUT/"
+if [ "$SKIP_VISION" = "0" ]; then
+  cp -f "$DEMO/rknn/"*vision*.rknn "$OUT/"
+fi
 ls -lh "$OUT"
 echo "== CONVERT DONE =="

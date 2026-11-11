@@ -9,7 +9,7 @@ IN=/tmp/one.in; LOG=/tmp/one.log
 [ -f "$IMG" ] || { echo "图片不存在: $IMG"; exit 1; }
 printf '%s\n' "$IDX" > "$IN"; rm -f "$LOG"
 T0=$(date +%s%3N)
-setsid bash -c "tail -f $IN | ./demo '$IMG' ./Qwen3.5-0.8B-MIT_vision_rk3576.rknn ./Qwen3.5-0.8B-MIT_w4a16_rk3576.rkllm $MT 1024 2 rk3576 '<|vision_start|>' '<|vision_end|>' '<|image_pad|>'" > "$LOG" 2>&1 &
+setsid bash -c "tail -f $(printf %q "$IN") | ./demo $(printf %q "$IMG") ./Qwen3.5-0.8B-MIT_vision_rk3576.rknn ./Qwen3.5-0.8B-MIT_w4a16_rk3576.rkllm $(printf %q "$MT") 1024 2 rk3576 $(printf %q '<|vision_start|>') $(printf %q '<|vision_end|>') $(printf %q '<|image_pad|>')" > "$LOG" 2>&1 &
 P=$!
 TF=""; prev=-1; stable=0
 while kill -0 $P 2>/dev/null; do

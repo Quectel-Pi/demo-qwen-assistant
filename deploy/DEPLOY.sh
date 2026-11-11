@@ -40,13 +40,12 @@ for arg in "$@"; do
 done
 
 say()  { printf '%s\n' "$*"; }
+# 参数一律走数组，不用 eval；路径含空格也不会被拆开
 run()  {
-    if [ "$DRY_RUN" = 1 ]; then
-        printf '[dry-run] %s\n' "$*"
-    else
-        printf '[exec] %s\n' "$*"
-        eval "$@"
-    fi
+    local tag='[exec]'
+    [ "$DRY_RUN" = 1 ] && tag='[dry-run]'
+    printf '%s' "$tag"; printf ' %q' "$@"; printf '\n'
+    [ "$DRY_RUN" = 1 ] || "$@"
 }
 
 # ── 选目标板：优先 /data/rkllm-chat 存在的设备 ────────────────────
@@ -77,17 +76,17 @@ fi
 # 所有设备命令走这个函数，dry-run 只打印
 DEV_SHELL() {
     if [ -n "$TID" ]; then
-        run "$ADB -t $TID shell $1"
+        run "$ADB" -t "$TID" shell "$1"
     else
-        run "$ADB shell $1"
+        run "$ADB" shell "$1"
     fi
 }
 DEV_PUSH() {
     local src=$1 dst=$2
     if [ -n "$TID" ]; then
-        run "$ADB -t $TID push '$src' $dst"
+        run "$ADB" -t "$TID" push "$src" "$dst"
     else
-        run "$ADB push '$src' $dst"
+        run "$ADB" push "$src" "$dst"
     fi
 }
 
@@ -105,19 +104,20 @@ if [ "$BUILD_NATIVE" = 1 ]; then
     NN_LIB="$ROOT/rknn-llm/examples/multimodal_model_demo/deploy/3rdparty/librknnrt/Linux/librknn_api/aarch64"
     [ -d "$LLM_LIB" ] || { say "错误：缺 $LLM_LIB" >&2; exit 1; }
     [ -d "$NN_LIB" ]  || { say "错误：缺 $NN_LIB" >&2; exit 1; }
-    run "$CXX -std=c++17 -O2 -o '$NATIVE_BIN' '$HERE/native/rkllm_service.cpp' -I'$HERE/native' -L'$LLM_LIB' -L'$NN_LIB' -lrkllmrt -lrknnrt -lpthread"
+    run "$CXX" -std=c++17 -O2 -o "$NATIVE_BIN" "$HERE/native/rkllm_service.cpp" \
+        -I"$HERE/native" -L"$LLM_LIB" -L"$NN_LIB" -lrkllmrt -lrknnrt -lpthread
 fi
 
 # ── 1. UI 源码 ───────────────────────────────────────────────────
 say ""
 say "== 1/5 推送 UI 源码 -> /data/rkllm-chat/ui/rkchat/ =="
-DEV_SHELL "'mkdir -p /data/rkllm-chat/ui/rkchat'"
+DEV_SHELL "mkdir -p /data/rkllm-chat/ui/rkchat"
 for f in rkchat.py desktop_session.py client.py camera.py voice.py vkbd.py style.css run.sh; do
     [ -f "$HERE/ui/rkchat/$f" ] || { say "跳过（不存在）: $f"; continue; }
     DEV_PUSH "$HERE/ui/rkchat/$f" "/data/rkllm-chat/ui/rkchat/$f"
 done
 # 清掉 pyc，避免旧字节码盖过新源码
-DEV_SHELL "'rm -rf /data/rkllm-chat/ui/rkchat/__pycache__'"
+DEV_SHELL "rm -rf /data/rkllm-chat/ui/rkchat/__pycache__"
 
 # ── 2. 服务端 ────────────────────────────────────────────────────
 say ""
@@ -131,25 +131,25 @@ if [ "$BUILD_NATIVE" = 1 ] && [ -f "$HERE/native/rkllm-service" ]; then
     # Do not overwrite a mapped executable (ETXTBSY). Stage and rename atomically;
     # the service keeps the old inode until step 5 restarts it.
     DEV_PUSH "$HERE/native/rkllm-service" "/data/rkllm-chat/native/rkllm-service.new"
-    DEV_SHELL "'chmod +x /data/rkllm-chat/native/rkllm-service.new && mv -f /data/rkllm-chat/native/rkllm-service.new /data/rkllm-chat/native/rkllm-service'"
+    DEV_SHELL "chmod +x /data/rkllm-chat/native/rkllm-service.new && mv -f /data/rkllm-chat/native/rkllm-service.new /data/rkllm-chat/native/rkllm-service"
 else
     say "   （跳过 rkllm-service 二进制；需要更新请加 --build-native）"
 fi
 
 # 语音模型和二进制依赖仍由设备环境提供，仅同步小体积后端源码。
 if [ -f "$HERE/voice-vision/talk.py" ]; then
-    DEV_SHELL "'mkdir -p /data/voice-vision'"
+    DEV_SHELL "mkdir -p /data/voice-vision"
     DEV_PUSH "$HERE/voice-vision/talk.py" "/data/voice-vision/talk.py"
 fi
 
 # ── 3. 辅助脚本 ──────────────────────────────────────────────────
 say ""
 say "== 3/5 推送辅助脚本 -> /data/rkllm_qwen35/ =="
-DEV_SHELL "'mkdir -p /data/rkllm_qwen35'"
+DEV_SHELL "mkdir -p /data/rkllm_qwen35"
 for f in chat.sh run.sh bench.sh stress.sh chat.py; do
     [ -f "$HERE/qwen35/$f" ] || continue
     DEV_PUSH "$HERE/qwen35/$f" "/data/rkllm_qwen35/$f"
-    DEV_SHELL "'chmod +x /data/rkllm_qwen35/$f'"
+    DEV_SHELL "chmod +x /data/rkllm_qwen35/$f"
 done
 
 # ── 4. systemd unit ──────────────────────────────────────────────
@@ -157,7 +157,7 @@ say ""
 say "== 4/5 推送 systemd unit =="
 if [ -f "$HERE/rkllm-chat.service" ]; then
     DEV_PUSH "$HERE/rkllm-chat.service" "/etc/systemd/system/rkllm-chat.service"
-    DEV_SHELL "'systemctl daemon-reload'"
+    DEV_SHELL "systemctl daemon-reload"
 else
     say "   跳过（deploy/rkllm-chat.service 不存在）"
 fi
@@ -166,7 +166,7 @@ fi
 say ""
 if [ "$RESTART" = 1 ]; then
     say "== 5/5 重启推理服务 =="
-    DEV_SHELL "'systemctl enable rkllm-chat 2>/dev/null; systemctl restart rkllm-chat'"
+    DEV_SHELL "systemctl enable rkllm-chat 2>/dev/null; systemctl restart rkllm-chat"
     if [ "$DRY_RUN" = 0 ]; then
         sleep 8
         state=$($ADB -t "$TID" shell "systemctl is-active rkllm-chat" | tr -d '\r')

@@ -9,7 +9,7 @@ for i in 1 2 3 4; do
   LOG=/tmp/st$i.log; IN=/tmp/st$i.in
   printf '1\n' > "$IN"; rm -f "$LOG"
   T0=$(date +%s%3N)
-  setsid bash -c "tail -f $IN | ./demo demo.jpg ./Qwen3.5-0.8B-MIT_vision_rk3576.rknn $M 400 1024 2 rk3576 '<|vision_start|>' '<|vision_end|>' '<|image_pad|>'" > "$LOG" 2>&1 &
+  setsid bash -c "tail -f $(printf %q "$IN") | ./demo demo.jpg ./Qwen3.5-0.8B-MIT_vision_rk3576.rknn $(printf %q "$M") 400 1024 2 rk3576 $(printf %q '<|vision_start|>') $(printf %q '<|vision_end|>') $(printf %q '<|image_pad|>')" > "$LOG" 2>&1 &
   P=$!
   TF=""
   prev=-1; stable=0

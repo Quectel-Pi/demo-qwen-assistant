@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import os
 import subprocess
+import sys
 import threading
 import time
 
@@ -39,7 +40,7 @@ def list_camera_devices() -> list[str]:
                 out.append(os.path.join("/dev", name))
     except OSError:
         pass
-    return sorted(out, key=lambda p: int(p[5:]))
+    return sorted(out, key=lambda p: int(os.path.basename(p)[5:]))
 
 
 def capture_frame(path: str, dev: str = DEFAULT_DEV,
@@ -76,6 +77,7 @@ class PreviewStream:
         self._nbytes = w * h * 3
         self._proc: subprocess.Popen | None = None
         self._thread: threading.Thread | None = None
+        self._drain_thread: threading.Thread | None = None
         self._lock = threading.Lock()
         self._frame_ready = threading.Condition(self._lock)
         self._frame: np.ndarray | None = None
@@ -103,18 +105,47 @@ class PreviewStream:
         with self._frame_ready:
             self._epoch += 1
             epoch = self._epoch
+            start_seq = self._seq
             self._proc = proc
             self._running = True
             self.last_error = None
             self._frame = self._frame_time = None
             thread = threading.Thread(target=self._pump, args=(proc, epoch), daemon=True)
             self._thread = thread
+            drain = threading.Thread(target=self._drain, args=(proc.stderr,),
+                                     daemon=True)
+            self._drain_thread = drain
         thread.start()
-        return True
+        drain.start()
+
+        # 握手：ffmpeg 起来也可能立刻死掉（板端只有一个 V4L2 节点，
+        # 上一轮 stop() 的 kill 还没生效、或被别的进程占用）。
+        # 不握手的话 start() 报成功，UI 切到"关闭摄像头"，然后卡在
+        # "等待新画面"，用户只能手动关了重开。
+        # 用条件变量等首帧，正常 <200ms 就返回，不会白等 1.5s。
+        deadline = time.monotonic() + 1.5
+        with self._frame_ready:
+            while True:
+                if not self._running or self._epoch != epoch:
+                    break            # 采集线程已经收尾（EOF/异常）
+                if self._seq > start_seq:
+                    return True      # 第一帧到手，确认可用
+                if proc.poll() is not None:
+                    self.last_error = self.last_error or "ffmpeg 立即退出（摄像头被占用？）"
+                    break
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    self.last_error = self.last_error or "摄像头 1.5s 内没有输出画面"
+                    break
+                self._frame_ready.wait(timeout=min(remaining, 0.05))
+        self.stop()
+        return False
 
     def stop(self):
         with self._frame_ready:
             proc, thread = self._proc, self._thread
+            drain = self._drain_thread
+            self._drain_thread = None
             self._epoch += 1
             self._running = False
             self._proc = self._thread = None
@@ -129,8 +160,9 @@ class PreviewStream:
                 proc.wait(timeout=2)
             except (OSError, subprocess.TimeoutExpired):
                 pass
-        if thread is not None and thread is not threading.current_thread() and thread.is_alive():
-            thread.join(timeout=2)
+        for t in (thread, drain):
+            if t is not None and t is not threading.current_thread() and t.is_alive():
+                t.join(timeout=2)
 
     @property
     def running(self) -> bool:
@@ -219,9 +251,35 @@ class PreviewStream:
                 proc.wait(timeout=2)
             except (OSError, subprocess.TimeoutExpired):
                 pass
-            for pipe in (proc.stdout, proc.stderr):
-                if pipe is not None:
-                    pipe.close()
+            # stderr 归 _drain 线程关（它可能还在迭代），这里只负责 stdout。
+            try:
+                if proc.stdout is not None:
+                    proc.stdout.close()
+            except (OSError, ValueError):
+                pass
+
+    def _drain(self, pipe):
+        """持续排空 ffmpeg 的 stderr，只保留最后一行给 UI 显示。
+
+        为什么必须有这条线程：ffmpeg 用 -loglevel error，正常时几乎不输出，
+        但一旦开始刷错误（设备忙、格式协商失败、USB 掉线重连），
+        stderr 管道的 64KB 缓冲写满后 ffmpeg 自己阻塞在 write(2) 上，
+        不再产出帧，_pump 里的 stdout.read 就永久阻塞 → 预览永远等新画面。
+        """
+        if pipe is None:
+            return
+        try:
+            for line in pipe:
+                text = line.decode("utf-8", "replace").strip()
+                if text:
+                    self.last_error = text      # 只留最后一行，够定位问题
+        except (OSError, ValueError):
+            pass
+        finally:
+            try:
+                pipe.close()
+            except (OSError, ValueError):
+                pass
 
 
 
@@ -259,7 +317,9 @@ def write_bmp(path: str, rgb: "np.ndarray") -> bool:
                     f.write(body[y * row_raw:(y + 1) * row_raw])
                     f.write(padb)
         return os.path.getsize(path) > 54
-    except Exception:
+    except Exception as exc:                 # 抓帧失败不能静默，否则现场无从查
+        print("write_bmp 失败 %s: %s: %s" % (path, type(exc).__name__, exc),
+              file=sys.stderr)
         return False
 
 

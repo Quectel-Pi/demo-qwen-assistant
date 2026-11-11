@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import os
+import select
 import socket
 import sys
 import threading
@@ -24,6 +25,9 @@ except Exception:          # 允许脱离 GTK 做命令行自测
     _HAS_GLIB = False
 
 DEFAULT_SOCK = "/run/rkllm-chat.sock"
+# 写超时：ask() 跑在 GTK 主线程，socket 无超时的话服务端卡在 g_infer_mutex
+# 时一次 write 就能把整个界面冻住。只给写用，接收线程已单独置超时。
+SEND_TIMEOUT = 10.0
 
 
 def _dispatch(fn, *args, _use_glib=True):
@@ -86,6 +90,9 @@ class ChatClient:
             s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             s.settimeout(timeout)
             s.connect(self.sock_path)
+            # 保持阻塞语义：同一个 fd 上的 reader 是 makefile 缓冲读，
+            # 给 socket 设超时会在服务端停顿时抛 socket.timeout 并让缓冲对象失效，
+            # 长连接的流式 token 就断了。写超时改用 select 轮询（见 _send）。
             s.settimeout(None)
             reader = s.makefile("rwb")
         except OSError as exc:
@@ -141,12 +148,30 @@ class ChatClient:
 
     # ── 发送 ────────────────────────────────────────────────────
     def _send(self, obj: dict) -> bool:
+        """带写超时发一行 JSON。
+
+        为什么用 select 而不是 sock.settimeout()：超时是 fd 级的，这个 socket
+        上的 `reader = s.makefile("rwb")` 会用无限阻塞读；一旦设了 sock 超时，
+        服务端推理/停顿超过阈值时 readline() 会抛 socket.timeout，而且带
+        makefile 的缓冲读在超时后内部状态不可再用 —— _recv_loop 会直接崩溃
+        并误判连接断开，正在流式出字的这一轮就被白白丢掉。
+        所以读路径完全不碰，只在写之前 select 轮询可写性，最多等
+        SEND_TIMEOUT 秒。超时就把本轮判为失败返回，GTK 主线程不会冻住，
+        长连接和流式收包行为与原来完全一致。
+        """
+        data = (json.dumps(obj, ensure_ascii=False) + "\n").encode("utf-8")
         try:
             with self._lock:
-                if not self._alive or self._file is None:
+                if not self._alive or self._file is None or self._sock is None:
                     return False
-                self._file.write(
-                    (json.dumps(obj, ensure_ascii=False) + "\n").encode("utf-8"))
+                try:
+                    _, writable, _ = select.select([], [self._sock], [], SEND_TIMEOUT)
+                except ValueError:
+                    return False      # fd 已被 close() 收回
+                if not writable:
+                    raise TimeoutError(
+                        "发送超时（%.0fs）：服务端可能正忙" % SEND_TIMEOUT)
+                self._file.write(data)
                 self._file.flush()
             return True
         except (OSError, ValueError) as exc:

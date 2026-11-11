@@ -8,6 +8,7 @@
 #   0 / 1                → 预设问题（英文 / 中文「这张图片中有什么」）
 #   clear                → 清 KV cache（换话题时用）
 #   exit                 → 退出
+set -e
 cd "$(dirname "$0")" || exit 1
 export LD_LIBRARY_PATH=$PWD/lib
 
@@ -17,7 +18,8 @@ MT="${2:-256}"
 [ -f "$IMG" ] || { echo "图片不存在: $IMG"; exit 1; }
 
 AVAIL=$(free -m | awk '/^Mem:/{print $7}')
-if [ "$AVAIL" -lt 1800 ]; then
+# 某些 busybox/内核下没有 "available" 列，此时 AVAIL 为空，不能拿去做整数比较
+if [ -n "$AVAIL" ] && [ "$AVAIL" -lt 1800 ]; then
     echo "[警告] 可用内存 ${AVAIL} MB < 1800 MB，可能 OOM"
     echo "       建议: systemctl isolate multi-user.target  关掉桌面再跑"
 fi
