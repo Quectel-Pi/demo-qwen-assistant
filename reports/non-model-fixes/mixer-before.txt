@@ -1,0 +1,360 @@
+/usr/bin/amixer
+Simple mixer control 'Headphone',0
+Simple mixer control 'Speaker',0
+Simple mixer control 'ADC MUX',0
+Simple mixer control 'ADC Mixer DACL ADCL Mixer',0
+Simple mixer control 'ADC Mixer DACR ADCR Mixer',0
+Simple mixer control 'ADC OSR',0
+Simple mixer control 'ADC OSR Volume ON',0
+Simple mixer control 'ADC OUTPUT Invert',0
+Simple mixer control 'ADC Ramp Rate',0
+Simple mixer control 'ADC2DAC Mixer',0
+Simple mixer control 'ADCL',0
+Simple mixer control 'ADCL PGA',0
+Simple mixer control 'ADCR',0
+Simple mixer control 'ADCR PGA',0
+Simple mixer control 'ALC',0
+Simple mixer control 'ALC Capture Max Gain',0
+Simple mixer control 'ALC Capture Target Level',0
+Simple mixer control 'ALC Capture Winsize',0
+Simple mixer control 'DAC OUTPUT Invert',0
+Simple mixer control 'DACL',0
+Simple mixer control 'DACR',0
+Simple mixer control 'Headset Mic',0
+Simple mixer control 'IF ADCDACL Mixer ADCL DACL Mixer',0
+Simple mixer control 'IF ADCDACR Mixer ADCR DACR Mixer',0
+Simple mixer control 'IF DACL Mixer DACR DACL Mixer',0
+Simple mixer control 'IF DACR Mixer DACL DACR Mixer',0
+Simple mixer control 'Main Mic',0
+Simple mixer control 'OUTL MUX',0
+Simple mixer control 'OUTR MUX',0
+Simple mixer control 'PGAL Select',0
+Simple mixer control 'PGAR Select',0
+Simple mixer control 'SAI1 Clk Auto',0
+Simple mixer control 'SAI1 Receive Mono',0
+Simple mixer control 'SAI1 Receive Mono Slot Select',0
+Simple mixer control 'SAI1 Receive PATH0 Source Select',0
+Simple mixer control 'SAI1 Receive PATH1 Source Select',0
+Simple mixer control 'SAI1 Receive PATH2 Source Select',0
+Simple mixer control 'SAI1 Receive PATH3 Source Select',0
+Simple mixer control 'SAI1 Receive SDIx Select',0
+Simple mixer control 'SAI1 Receive Start Mode Sel',0
+Simple mixer control 'SAI1 SDI0 Loopback',0
+Simple mixer control 'SAI1 SDI0 Loopback I2S LR',0
+Simple mixer control 'SAI1 SDI0 Loopback I2S LR Channel Sel',0
+Simple mixer control 'SAI1 SDI0 Loopback Src Select',0
+Simple mixer control 'SAI1 SDI1 Loopback',0
+Simple mixer control 'SAI1 SDI1 Loopback I2S LR',0
+Simple mixer control 'SAI1 SDI1 Loopback I2S LR Channel Sel',0
+Simple mixer control 'SAI1 SDI1 Loopback Src Select',0
+Simple mixer control 'SAI1 SDI2 Loopback',0
+Simple mixer control 'SAI1 SDI2 Loopback I2S LR',0
+Simple mixer control 'SAI1 SDI2 Loopback I2S LR Channel Sel',0
+Simple mixer control 'SAI1 SDI2 Loopback Src Select',0
+Simple mixer control 'SAI1 SDI3 Loopback',0
+Simple mixer control 'SAI1 SDI3 Loopback I2S LR',0
+Simple mixer control 'SAI1 SDI3 Loopback I2S LR Channel Sel',0
+Simple mixer control 'SAI1 SDI3 Loopback Src Select',0
+Simple mixer control 'SAI1 Sync In',0
+Simple mixer control 'SAI1 Sync Out',0
+Simple mixer control 'SAI1 Transmit Mono',0
+Simple mixer control 'SAI1 Transmit SDO0 Source Select',0
+Simple mixer control 'SAI1 Transmit SDO1 Source Select',0
+Simple mixer control 'SAI1 Transmit SDO2 Source Select',0
+Simple mixer control 'SAI1 Transmit SDO3 Source Select',0
+Simple mixer control 'SAI1 Transmit SDOx Select',0
+Simple mixer control 'SAI1 Transmit Start Mode Sel',0
+Simple mixer control 'hp switch',0
+Simple mixer control 'spk switch',0
+Simple mixer control 'Headphone',0
+  Capabilities: pswitch pswitch-joined
+  Playback channels: Mono
+  Mono: Playback [off]
+Simple mixer control 'Speaker',0
+  Capabilities: pswitch pswitch-joined
+  Playback channels: Mono
+  Mono: Playback [on]
+Simple mixer control 'ADC MUX',0
+  Capabilities: enum
+  Items: 'AMIC' 'DMIC'
+  Item0: 'AMIC'
+Simple mixer control 'ADC Mixer DACL ADCL Mixer',0
+  Capabilities: pswitch pswitch-joined
+  Playback channels: Mono
+  Mono: Playback [off]
+Simple mixer control 'ADC Mixer DACR ADCR Mixer',0
+  Capabilities: pswitch pswitch-joined
+  Playback channels: Mono
+  Mono: Playback [off]
+Simple mixer control 'ADC OSR',0
+  Capabilities: volume volume-joined
+  Playback channels: Mono
+  Capture channels: Mono
+  Limits: 0 - 255
+  Mono: 223 [87%] [16.00dB]
+Simple mixer control 'ADC OSR Volume ON',0
+  Capabilities: pswitch
+  Playback channels: Front Left - Front Right
+  Mono:
+  Front Left: Playback [on]
+  Front Right: Playback [on]
+Simple mixer control 'ADC OUTPUT Invert',0
+  Capabilities: pswitch
+  Playback channels: Front Left - Front Right
+  Mono:
+  Front Left: Playback [off]
+  Front Right: Playback [off]
+Simple mixer control 'ADC Ramp Rate',0
+  Capabilities: enum
+  Items: '0.125db/1  LRCK' '0.125db/4  LRCK' '0.125db/8  LRCK' '0.125db/16  LRCK' '0.125db/32  LRCK' '0.125db/64  LRCK' '0.125db/128  LRCK' '0.125db/256  LRCK' '0.125db/512  LRCK' '0.125db/1024  LRCK' '0.125db/2048  LRCK' '0.125db/4096  LRCK' '0.125db/8192  LRCK' '0.125db/16384  LRCK' '0.125db/32768  LRCK' '0.125db/65536  LRCK'
+  Item0: '0.125db/1  LRCK'
+Simple mixer control 'ADC2DAC Mixer',0
+  Capabilities: volume volume-joined
+  Playback channels: Mono
+  Capture channels: Mono
+  Limits: 0 - 127
+  Mono: 62 [49%] [-33.00dB]
+Simple mixer control 'ADCL',0
+  Capabilities: cvolume cvolume-joined
+  Capture channels: Mono
+  Limits: Capture 0 - 255
+  Mono: Capture 191 [75%] [0.00dB]
+Simple mixer control 'ADCL PGA',0
+  Capabilities: volume volume-joined
+  Playback channels: Mono
+  Capture channels: Mono
+  Limits: 0 - 14
+  Mono: 11 [79%] [33.00dB]
+Simple mixer control 'ADCR',0
+  Capabilities: cvolume cvolume-joined
+  Capture channels: Mono
+  Limits: Capture 0 - 255
+  Mono: Capture 191 [75%] [0.00dB]
+Simple mixer control 'ADCR PGA',0
+  Capabilities: volume volume-joined
+  Playback channels: Mono
+  Capture channels: Mono
+  Limits: 0 - 14
+  Mono: 12 [86%] [36.00dB]
+Simple mixer control 'ALC',0
+  Capabilities: cenum
+  Items: 'ALC OFF' 'ADCR ALC ON' 'ADCL ALC ON' 'ADCL & ADCL ALC ON'
+  Item0: 'ALC OFF'
+Simple mixer control 'ALC Capture Max Gain',0
+  Capabilities: volume volume-joined
+  Playback channels: Mono
+  Capture channels: Mono
+  Limits: 0 - 15
+  Mono: 0 [0%] [-32.00dB]
+Simple mixer control 'ALC Capture Target Level',0
+  Capabilities: volume volume-joined
+  Playback channels: Mono
+  Capture channels: Mono
+  Limits: 0 - 15
+  Mono: 0 [0%] [-32.00dB]
+Simple mixer control 'ALC Capture Winsize',0
+  Capabilities: enum
+  Items: '2 LRCK' '4  LRCK' '8  LRCK' '16  LRCK' '32  LRCK' '64  LRCK' '128  LRCK' '256  LRCK' '512  LRCK' '1024  LRCK' '2048  LRCK' '4096  LRCK' '8192  LRCK' '16384  LRCK' '32768  LRCK' '65536  LRCK'
+  Item0: '2 LRCK'
+Simple mixer control 'DAC OUTPUT Invert',0
+  Capabilities: pswitch
+  Playback channels: Front Left - Front Right
+  Mono:
+  Front Left: Playback [off]
+  Front Right: Playback [off]
+Simple mixer control 'DACL',0
+  Capabilities: pvolume pvolume-joined
+  Playback channels: Mono
+  Limits: Playback 0 - 255
+  Mono: Playback 179 [70%] [-6.00dB]
+Simple mixer control 'DACR',0
+  Capabilities: pvolume pvolume-joined
+  Playback channels: Mono
+  Limits: Playback 0 - 255
+  Mono: Playback 179 [70%] [-6.00dB]
+Simple mixer control 'Headset Mic',0
+  Capabilities: pswitch pswitch-joined
+  Playback channels: Mono
+  Mono: Playback [off]
+Simple mixer control 'IF ADCDACL Mixer ADCL DACL Mixer',0
+  Capabilities: pswitch pswitch-joined
+  Playback channels: Mono
+  Mono: Playback [off]
+Simple mixer control 'IF ADCDACR Mixer ADCR DACR Mixer',0
+  Capabilities: pswitch pswitch-joined
+  Playback channels: Mono
+  Mono: Playback [off]
+Simple mixer control 'IF DACL Mixer DACR DACL Mixer',0
+  Capabilities: pswitch pswitch-joined
+  Playback channels: Mono
+  Mono: Playback [off]
+Simple mixer control 'IF DACR Mixer DACL DACR Mixer',0
+  Capabilities: pswitch pswitch-joined
+  Playback channels: Mono
+  Mono: Playback [off]
+Simple mixer control 'Main Mic',0
+  Capabilities: pswitch pswitch-joined
+  Playback channels: Mono
+  Mono: Playback [on]
+Simple mixer control 'OUTL MUX',0
+  Capabilities: enum
+  Items: 'Normal' 'DAC2 channel to DAC1 channel'
+  Item0: 'Normal'
+Simple mixer control 'OUTR MUX',0
+  Capabilities: enum
+  Items: 'Normal' 'DAC1 channel to DAC2 channel'
+  Item0: 'Normal'
+Simple mixer control 'PGAL Select',0
+  Capabilities: enum
+  Items: 'DifferentialL' 'Line 1P' 'Line 2P'
+  Item0: 'Line 2P'
+Simple mixer control 'PGAR Select',0
+  Capabilities: enum
+  Items: 'DifferentialR' 'Line 2N' 'Line 1N'
+  Item0: 'Line 2N'
+Simple mixer control 'SAI1 Clk Auto',0
+  Capabilities: pswitch pswitch-joined
+  Playback channels: Mono
+  Mono: Playback [off]
+Simple mixer control 'SAI1 Receive Mono',0
+  Capabilities: enum
+  Items: 'Disable' 'Enable'
+  Item0: 'Disable'
+Simple mixer control 'SAI1 Receive Mono Slot Select',0
+  Capabilities: volume volume-joined
+  Playback channels: Mono
+  Capture channels: Mono
+  Limits: 0 - 128
+  Mono: 0 [0%] [0.00dB]
+Simple mixer control 'SAI1 Receive PATH0 Source Select',0
+  Capabilities: enum
+  Items: 'From SDI0' 'From SDI1' 'From SDI2' 'From SDI3'
+  Item0: 'From SDI0'
+Simple mixer control 'SAI1 Receive PATH1 Source Select',0
+  Capabilities: enum
+  Items: 'From SDI0' 'From SDI1' 'From SDI2' 'From SDI3'
+  Item0: 'From SDI1'
+Simple mixer control 'SAI1 Receive PATH2 Source Select',0
+  Capabilities: enum
+  Items: 'From SDI0' 'From SDI1' 'From SDI2' 'From SDI3'
+  Item0: 'From SDI2'
+Simple mixer control 'SAI1 Receive PATH3 Source Select',0
+  Capabilities: enum
+  Items: 'From SDI0' 'From SDI1' 'From SDI2' 'From SDI3'
+  Item0: 'From SDI3'
+Simple mixer control 'SAI1 Receive SDIx Select',0
+  Capabilities: enum
+  Items: 'Auto' 'SDIx1' 'SDIx2' 'SDIx3' 'SDIx4'
+  Item0: 'Auto'
+Simple mixer control 'SAI1 Receive Start Mode Sel',0
+  Capabilities: enum
+  Items: 'Standalone' 'Chained'
+  Item0: 'Standalone'
+Simple mixer control 'SAI1 SDI0 Loopback',0
+  Capabilities: enum
+  Items: 'Disable' 'Enable'
+  Item0: 'Disable'
+Simple mixer control 'SAI1 SDI0 Loopback I2S LR',0
+  Capabilities: enum
+  Items: 'Disable' 'Enable'
+  Item0: 'Disable'
+Simple mixer control 'SAI1 SDI0 Loopback I2S LR Channel Sel',0
+  Capabilities: enum
+  Items: 'L:MIC R:LP' 'L:LP R:MIC'
+  Item0: 'L:MIC R:LP'
+Simple mixer control 'SAI1 SDI0 Loopback Src Select',0
+  Capabilities: enum
+  Items: 'From SDO0' 'From SDO1' 'From SDO2' 'From SDO3'
+  Item0: 'From SDO0'
+Simple mixer control 'SAI1 SDI1 Loopback',0
+  Capabilities: enum
+  Items: 'Disable' 'Enable'
+  Item0: 'Disable'
+Simple mixer control 'SAI1 SDI1 Loopback I2S LR',0
+  Capabilities: enum
+  Items: 'Disable' 'Enable'
+  Item0: 'Disable'
+Simple mixer control 'SAI1 SDI1 Loopback I2S LR Channel Sel',0
+  Capabilities: enum
+  Items: 'L:MIC R:LP' 'L:LP R:MIC'
+  Item0: 'L:MIC R:LP'
+Simple mixer control 'SAI1 SDI1 Loopback Src Select',0
+  Capabilities: enum
+  Items: 'From SDO0' 'From SDO1' 'From SDO2' 'From SDO3'
+  Item0: 'From SDO0'
+Simple mixer control 'SAI1 SDI2 Loopback',0
+  Capabilities: enum
+  Items: 'Disable' 'Enable'
+  Item0: 'Disable'
+Simple mixer control 'SAI1 SDI2 Loopback I2S LR',0
+  Capabilities: enum
+  Items: 'Disable' 'Enable'
+  Item0: 'Disable'
+Simple mixer control 'SAI1 SDI2 Loopback I2S LR Channel Sel',0
+  Capabilities: enum
+  Items: 'L:MIC R:LP' 'L:LP R:MIC'
+  Item0: 'L:MIC R:LP'
+Simple mixer control 'SAI1 SDI2 Loopback Src Select',0
+  Capabilities: enum
+  Items: 'From SDO0' 'From SDO1' 'From SDO2' 'From SDO3'
+  Item0: 'From SDO0'
+Simple mixer control 'SAI1 SDI3 Loopback',0
+  Capabilities: enum
+  Items: 'Disable' 'Enable'
+  Item0: 'Disable'
+Simple mixer control 'SAI1 SDI3 Loopback I2S LR',0
+  Capabilities: enum
+  Items: 'Disable' 'Enable'
+  Item0: 'Disable'
+Simple mixer control 'SAI1 SDI3 Loopback I2S LR Channel Sel',0
+  Capabilities: enum
+  Items: 'L:MIC R:LP' 'L:LP R:MIC'
+  Item0: 'L:MIC R:LP'
+Simple mixer control 'SAI1 SDI3 Loopback Src Select',0
+  Capabilities: enum
+  Items: 'From SDO0' 'From SDO1' 'From SDO2' 'From SDO3'
+  Item0: 'From SDO0'
+Simple mixer control 'SAI1 Sync In',0
+  Capabilities: enum
+  Items: 'From IO' 'From Sync Port'
+  Item0: 'From IO'
+Simple mixer control 'SAI1 Sync Out',0
+  Capabilities: enum
+  Items: 'From CRU' 'From IO'
+  Item0: 'From CRU'
+Simple mixer control 'SAI1 Transmit Mono',0
+  Capabilities: enum
+  Items: 'Disable' 'Enable'
+  Item0: 'Disable'
+Simple mixer control 'SAI1 Transmit SDO0 Source Select',0
+  Capabilities: enum
+  Items: 'From PATH0' 'From PATH1' 'From PATH2' 'From PATH3'
+  Item0: 'From PATH2'
+Simple mixer control 'SAI1 Transmit SDO1 Source Select',0
+  Capabilities: enum
+  Items: 'From PATH0' 'From PATH1' 'From PATH2' 'From PATH3'
+  Item0: 'From PATH1'
+Simple mixer control 'SAI1 Transmit SDO2 Source Select',0
+  Capabilities: enum
+  Items: 'From PATH0' 'From PATH1' 'From PATH2' 'From PATH3'
+  Item0: 'From PATH0'
+Simple mixer control 'SAI1 Transmit SDO3 Source Select',0
+  Capabilities: enum
+  Items: 'From PATH0' 'From PATH1' 'From PATH2' 'From PATH3'
+  Item0: 'From PATH3'
+Simple mixer control 'SAI1 Transmit SDOx Select',0
+  Capabilities: enum
+  Items: 'Auto' 'SDOx1' 'SDOx2' 'SDOx3' 'SDOx4'
+  Item0: 'Auto'
+Simple mixer control 'SAI1 Transmit Start Mode Sel',0
+  Capabilities: enum
+  Items: 'Standalone' 'Chained'
+  Item0: 'Standalone'
+Simple mixer control 'hp switch',0
+  Capabilities: pswitch pswitch-joined
+  Playback channels: Mono
+  Mono: Playback [off]
+Simple mixer control 'spk switch',0
+  Capabilities: pswitch pswitch-joined
+  Playback channels: Mono
+  Mono: Playback [off]

@@ -1,0 +1,43 @@
+node /org/gnome/Shell/Introspect {
+  interface org.freedesktop.DBus.Properties {
+    methods:
+      Get(in  s interface_name,
+          in  s property_name,
+          out v value);
+      GetAll(in  s interface_name,
+             out a{sv} properties);
+      Set(in  s interface_name,
+          in  s property_name,
+          in  v value);
+    signals:
+      PropertiesChanged(s interface_name,
+                        a{sv} changed_properties,
+                        as invalidated_properties);
+    properties:
+  };
+  interface org.freedesktop.DBus.Introspectable {
+    methods:
+      Introspect(out s xml_data);
+    signals:
+    properties:
+  };
+  interface org.freedesktop.DBus.Peer {
+    methods:
+      Ping();
+      GetMachineId(out s machine_uuid);
+    signals:
+    properties:
+  };
+  interface org.gnome.Shell.Introspect {
+    methods:
+      GetRunningApplications(out a{sa{sv}} apps);
+      GetWindows(out a{ta{sv}} windows);
+    signals:
+      RunningApplicationsChanged();
+      WindowsChanged();
+    properties:
+      readonly b AnimationsEnabled = true;
+      readonly (ii) ScreenSize = (1280, 800);
+      readonly u version = 3;
+  };
+};

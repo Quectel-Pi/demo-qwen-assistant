@@ -1,0 +1,82 @@
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:37.771: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:37.797: atk-bridge: get_device_events_reply: unknown signature
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:37.798: atk-bridge: GetRegisteredEvents returned message with unknown signature
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:37.832: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:37.866: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:37.867: atk-bridge: get_device_events_reply: unknown signature
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:37.867: atk-bridge: GetRegisteredEvents returned message with unknown signature
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:37.867: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:37.894: atk-bridge: get_device_events_reply: unknown signature
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:37.894: atk-bridge: GetRegisteredEvents returned message with unknown signature
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:37.925: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:37.959: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:37.993: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:38.017: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:38.044: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:38.066: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:38.099: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:38.113: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:38.135: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:38.157: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:38.181: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:38.214: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:38.235: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:38.259: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:38.281: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:38.313: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:38.335: AT-SPI: Could not obtain desktop path or name
+
+
+** (rkchat-suite.py:1783409): WARNING **: 18:03:38.335: AT-SPI: Could not obtain desktop path or name
+
+[READY] {"x": 68, "y": 764, "busy": true, "button_enabled": true}
+[RESULT] {'id': 'kernel_touch_closes_camera_during_question', 'status': 'PASS', 'position': {'x': 68, 'y': 764, 'busy': True, 'button_enabled': True}, 'click_events': [{'busy': True, 'mode_after_click': False}], 'cam_mode': False, 'camera_running': False, 'preview_visible': False, 'answer_finished': True}
+
+(rkchat-suite.py:1783409): Gtk-CRITICAL **: 18:04:04.893: gtk_main_quit: assertion 'main_loops != NULL' failed

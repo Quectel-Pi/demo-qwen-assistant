@@ -1,0 +1,121 @@
+{
+  "records": [
+    {
+      "id": "native_ui",
+      "status": "PASS",
+      "seconds": 0.21,
+      "backend": "GdkWaylandDisplay",
+      "builtin_keyboard": false,
+      "uid": 1001
+    },
+    {
+      "id": "cold_first_sentence",
+      "status": "PASS",
+      "seconds": 13.21,
+      "engine_was_loading": true,
+      "spoken": true,
+      "wall_ms": 801
+    },
+    {
+      "id": "independent_mic_route",
+      "status": "PASS",
+      "seconds": 13.21,
+      "mic": "plughw:CARD=U1080P,DEV=0",
+      "speaker": "hw:0,0"
+    },
+    {
+      "id": "mute_suppresses_audio",
+      "status": "PASS",
+      "seconds": 14.68,
+      "new_tts_calls": 0
+    },
+    {
+      "id": "rapid_round_no_tts_overlap",
+      "status": "PASS",
+      "seconds": 19.56,
+      "peak_synthesis_calls": 1,
+      "new_round_spoken": true
+    },
+    {
+      "id": "burst_no_drops_and_nonblocking_finish",
+      "status": "PASS",
+      "seconds": 37.87,
+      "fed": 16,
+      "synthesized": 16,
+      "played": 16,
+      "finish_ms": 0.014645000192103907
+    },
+    {
+      "id": "playback_failure_not_silent",
+      "status": "PASS",
+      "seconds": 38.64,
+      "states": [
+        "播放失败: injected output failure"
+      ]
+    },
+    {
+      "id": "request_error_cleans_audio",
+      "status": "PASS",
+      "seconds": 39.01
+    },
+    {
+      "id": "worker_status_runs_on_gtk_thread",
+      "status": "PASS",
+      "seconds": 39.21,
+      "thread_ids": [
+        547870493600
+      ]
+    },
+    {
+      "id": "cancel_mic_discards_partial_input",
+      "status": "PASS",
+      "seconds": 40.1
+    },
+    {
+      "id": "actual_abort_recovers",
+      "status": "PASS",
+      "seconds": 41.13,
+      "done": {
+        "ev": "done",
+        "aborted": 1,
+        "ttft": 553,
+        "tokens": 4,
+        "ctx": "reset"
+      }
+    },
+    {
+      "id": "request_after_abort_completes",
+      "status": "PASS",
+      "seconds": 41.97,
+      "answer": "北京",
+      "wall_ms": 635
+    },
+    {
+      "id": "twenty_reconnects_no_old_receivers",
+      "status": "PASS",
+      "seconds": 42.77,
+      "successful": 20,
+      "active_receivers": 1
+    },
+    {
+      "id": "ui_after_reconnect_completes",
+      "status": "PASS",
+      "seconds": 43.66,
+      "wall_ms": 677
+    },
+    {
+      "id": "real_mic_pcm_ready",
+      "status": "PASS",
+      "seconds": 44.58,
+      "ready_ms": 918
+    },
+    {
+      "id": "camera_plus_reading",
+      "status": "PASS",
+      "seconds": 64.2,
+      "camera_running": true,
+      "spoken": true,
+      "wall_ms": 17190
+    }
+  ]
+}

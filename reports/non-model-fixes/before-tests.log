@@ -1,0 +1,112 @@
+test_close_clears_busy_and_handles (test_runtime_robustness.ConnectionTests) ... FAIL
+test_old_receiver_cannot_disconnect_reconnected_socket (test_runtime_robustness.ConnectionTests) ... FAIL
+test_cold_start_waits_for_engine (test_runtime_robustness.SpeechTests) ... FAIL
+test_finish_never_blocks_gui_when_queue_is_full (test_runtime_robustness.SpeechTests) ... FAIL
+test_initialization_failure_is_reported (test_runtime_robustness.SpeechTests) ... FAIL
+test_late_feed_after_finish_is_ignored (test_runtime_robustness.SpeechTests) ... FAIL
+test_text_queue_does_not_drop_sentences (test_runtime_robustness.SpeechTests) ... FAIL
+test_two_rounds_never_synthesize_concurrently (test_runtime_robustness.SpeechTests) ... FAIL
+test_muted_done_does_not_fall_back_to_speech (test_runtime_robustness.UiTests) ... FAIL
+test_request_error_stops_speech_and_clears_buffer (test_runtime_robustness.UiTests) ... FAIL
+test_voice_state_from_worker_is_marshaled_to_main_thread (test_runtime_robustness.UiTests) ... FAIL
+
+======================================================================
+FAIL: test_close_clears_busy_and_handles (test_runtime_robustness.ConnectionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/leox/RKNN-MODEL/tests/test_runtime_robustness.py", line 127, in test_close_clears_busy_and_handles
+    self.assertFalse(c.busy)
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_old_receiver_cannot_disconnect_reconnected_socket (test_runtime_robustness.ConnectionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/leox/RKNN-MODEL/tests/test_runtime_robustness.py", line 141, in test_old_receiver_cannot_disconnect_reconnected_socket
+    self.assertTrue(c.connected, 'Old recv thread marked the new connection dead')
+AssertionError: False is not true : Old recv thread marked the new connection dead
+
+======================================================================
+FAIL: test_cold_start_waits_for_engine (test_runtime_robustness.SpeechTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/leox/RKNN-MODEL/tests/test_runtime_robustness.py", line 48, in test_cold_start_waits_for_engine
+    self.assertEqual(len(self.played), 1, 'First sentence lost before the engine was ready')
+AssertionError: 0 != 1 : First sentence lost before the engine was ready
+
+======================================================================
+FAIL: test_finish_never_blocks_gui_when_queue_is_full (test_runtime_robustness.SpeechTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/leox/RKNN-MODEL/tests/test_runtime_robustness.py", line 68, in test_finish_never_blocks_gui_when_queue_is_full
+    self.assertTrue(finished_promptly, 'finish blocked instead of returning to GTK')
+AssertionError: False is not true : finish blocked instead of returning to GTK
+
+======================================================================
+FAIL: test_initialization_failure_is_reported (test_runtime_robustness.SpeechTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/leox/RKNN-MODEL/tests/test_runtime_robustness.py", line 99, in test_initialization_failure_is_reported
+    self.assertTrue(any('test load failure' in x for x in states))
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_late_feed_after_finish_is_ignored (test_runtime_robustness.SpeechTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/leox/RKNN-MODEL/tests/test_runtime_robustness.py", line 76, in test_late_feed_after_finish_is_ignored
+    self.assertTrue(s._tq.empty(), 'Late text remained queued after completion')
+AssertionError: False is not true : Late text remained queued after completion
+
+======================================================================
+FAIL: test_text_queue_does_not_drop_sentences (test_runtime_robustness.SpeechTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/leox/RKNN-MODEL/tests/test_runtime_robustness.py", line 57, in test_text_queue_does_not_drop_sentences
+    self.assertEqual(len(seen), 20)
+AssertionError: 8 != 20
+
+======================================================================
+FAIL: test_two_rounds_never_synthesize_concurrently (test_runtime_robustness.SpeechTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/leox/RKNN-MODEL/tests/test_runtime_robustness.py", line 92, in test_two_rounds_never_synthesize_concurrently
+    self.assertEqual(peak[0], 1, 'Shared TTS engine was entered by two rounds concurrently')
+AssertionError: 2 != 1 : Shared TTS engine was entered by two rounds concurrently
+
+======================================================================
+FAIL: test_muted_done_does_not_fall_back_to_speech (test_runtime_robustness.UiTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/leox/RKNN-MODEL/tests/test_runtime_robustness.py", line 161, in test_muted_done_does_not_fall_back_to_speech
+    app._speak_async.assert_not_called()
+  File "/usr/lib/python3.10/unittest/mock.py", line 890, in assert_not_called
+    raise AssertionError(msg)
+AssertionError: Expected 'mock' to not have been called. Called 1 times.
+Calls: [call('你好。')].
+
+======================================================================
+FAIL: test_request_error_stops_speech_and_clears_buffer (test_runtime_robustness.UiTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/leox/RKNN-MODEL/tests/test_runtime_robustness.py", line 167, in test_request_error_stops_speech_and_clears_buffer
+    sp.stop.assert_called_once()
+  File "/usr/lib/python3.10/unittest/mock.py", line 908, in assert_called_once
+    raise AssertionError(msg)
+AssertionError: Expected 'stop' to have been called once. Called 0 times.
+
+======================================================================
+FAIL: test_voice_state_from_worker_is_marshaled_to_main_thread (test_runtime_robustness.UiTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/leox/RKNN-MODEL/tests/test_runtime_robustness.py", line 176, in test_voice_state_from_worker_is_marshaled_to_main_thread
+    app.lbl_voice.set_text.assert_not_called()
+  File "/usr/lib/python3.10/unittest/mock.py", line 890, in assert_not_called
+    raise AssertionError(msg)
+AssertionError: Expected 'set_text' to not have been called. Called 1 times.
+Calls: [call('在听')].
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.199s
+
+FAILED (failures=11)

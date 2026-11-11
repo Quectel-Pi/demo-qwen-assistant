@@ -1,0 +1,41 @@
+test_aplay_failure_is_not_reported_as_success (test_runtime_robustness.AudioRoutingTests.test_aplay_failure_is_not_reported_as_success) ... ok
+test_cancel_during_half_duplex_wait_does_not_open_mic (test_runtime_robustness.AudioRoutingTests.test_cancel_during_half_duplex_wait_does_not_open_mic) ... ok
+test_cancelled_dictation_is_not_submitted (test_runtime_robustness.AudioRoutingTests.test_cancelled_dictation_is_not_submitted) ... ok
+test_explicit_mic_setting_wins (test_runtime_robustness.AudioRoutingTests.test_explicit_mic_setting_wins) ... ok
+test_no_pcm_is_not_reported_ready (test_runtime_robustness.AudioRoutingTests.test_no_pcm_is_not_reported_ready) ... ok
+test_no_usb_capture_falls_back_to_onboard (test_runtime_robustness.AudioRoutingTests.test_no_usb_capture_falls_back_to_onboard) ... ok
+test_pcm_arrival_is_required_before_ready (test_runtime_robustness.AudioRoutingTests.test_pcm_arrival_is_required_before_ready) ... ok
+test_same_card_alias_is_resolved (test_runtime_robustness.AudioRoutingTests.test_same_card_alias_is_resolved) ... ok
+test_same_card_recording_is_half_duplex (test_runtime_robustness.AudioRoutingTests.test_same_card_recording_is_half_duplex) ... ok
+test_usb_capture_uses_stable_card_name (test_runtime_robustness.AudioRoutingTests.test_usb_capture_uses_stable_card_name) ... ok
+test_clear_error_ack_is_not_reported_as_success (test_runtime_robustness.ConnectionTests.test_clear_error_ack_is_not_reported_as_success) ... ok
+test_close_clears_busy_and_handles (test_runtime_robustness.ConnectionTests.test_close_clears_busy_and_handles) ... ok
+test_fragmented_control_ack_is_read_to_newline (test_runtime_robustness.ConnectionTests.test_fragmented_control_ack_is_read_to_newline) ... ok
+test_old_queued_gui_callbacks_are_discarded (test_runtime_robustness.ConnectionTests.test_old_queued_gui_callbacks_are_discarded) ... ok
+test_old_receiver_cannot_disconnect_reconnected_socket (test_runtime_robustness.ConnectionTests.test_old_receiver_cannot_disconnect_reconnected_socket) ... ok
+test_cold_start_waits_for_engine (test_runtime_robustness.SpeechTests.test_cold_start_waits_for_engine) ... ok
+test_finish_never_blocks_gui_when_queue_is_full (test_runtime_robustness.SpeechTests.test_finish_never_blocks_gui_when_queue_is_full) ... ok
+test_initialization_failure_is_reported (test_runtime_robustness.SpeechTests.test_initialization_failure_is_reported) ... [stream] 语音初始化失败: test load failure
+ok
+test_late_feed_after_finish_is_ignored (test_runtime_robustness.SpeechTests.test_late_feed_after_finish_is_ignored) ... ok
+test_text_queue_does_not_drop_sentences (test_runtime_robustness.SpeechTests.test_text_queue_does_not_drop_sentences) ... ok
+test_two_rounds_never_synthesize_concurrently (test_runtime_robustness.SpeechTests.test_two_rounds_never_synthesize_concurrently) ... ok
+test_clear_while_busy_preserves_current_round (test_runtime_robustness.UiTests.test_clear_while_busy_preserves_current_round) ... ok
+test_destroyed_ui_ignores_late_voice_state (test_runtime_robustness.UiTests.test_destroyed_ui_ignores_late_voice_state) ... ok
+test_done_with_reading_enabled_uses_fallback_when_needed (test_runtime_robustness.UiTests.test_done_with_reading_enabled_uses_fallback_when_needed) ... ok
+test_failed_server_clear_does_not_erase_local_history (test_runtime_robustness.UiTests.test_failed_server_clear_does_not_erase_local_history) ... ok
+test_muted_done_does_not_fall_back_to_speech (test_runtime_robustness.UiTests.test_muted_done_does_not_fall_back_to_speech) ... ok
+test_request_error_stops_speech_and_clears_buffer (test_runtime_robustness.UiTests.test_request_error_stops_speech_and_clears_buffer) ... ok
+test_voice_state_from_worker_is_marshaled_to_main_thread (test_runtime_robustness.UiTests.test_voice_state_from_worker_is_marshaled_to_main_thread) ... ok
+test_active_session_ignores_greeter (test_system_keyboard.DesktopSessionTests.test_active_session_ignores_greeter) ... ok
+test_builtin_keyboard_requires_explicit_option (test_system_keyboard.DesktopSessionTests.test_builtin_keyboard_requires_explicit_option) ... ok
+test_default_keyboard_is_system (test_system_keyboard.DesktopSessionTests.test_default_keyboard_is_system) ... ok
+test_invalid_keyboard_is_rejected (test_system_keyboard.DesktopSessionTests.test_invalid_keyboard_is_rejected) ... ok
+test_missing_desktop_is_an_explicit_error (test_system_keyboard.DesktopSessionTests.test_missing_desktop_is_an_explicit_error) ... ok
+test_regular_user_cannot_select_another_users_session (test_system_keyboard.DesktopSessionTests.test_regular_user_cannot_select_another_users_session) ... ok
+test_wayland_lock_file_is_not_a_socket (test_system_keyboard.DesktopSessionTests.test_wayland_lock_file_is_not_a_socket) ... ok
+
+----------------------------------------------------------------------
+Ran 35 tests in 2.161s
+
+OK

@@ -1,0 +1,17 @@
+test_close_clears_busy_and_handles (test_runtime_robustness.ConnectionTests) ... ok
+test_old_receiver_cannot_disconnect_reconnected_socket (test_runtime_robustness.ConnectionTests) ... ok
+test_cold_start_waits_for_engine (test_runtime_robustness.SpeechTests) ... ok
+test_finish_never_blocks_gui_when_queue_is_full (test_runtime_robustness.SpeechTests) ... ok
+test_initialization_failure_is_reported (test_runtime_robustness.SpeechTests) ... [stream] 语音初始化失败: test load failure
+ok
+test_late_feed_after_finish_is_ignored (test_runtime_robustness.SpeechTests) ... ok
+test_text_queue_does_not_drop_sentences (test_runtime_robustness.SpeechTests) ... ok
+test_two_rounds_never_synthesize_concurrently (test_runtime_robustness.SpeechTests) ... ok
+test_muted_done_does_not_fall_back_to_speech (test_runtime_robustness.UiTests) ... ok
+test_request_error_stops_speech_and_clears_buffer (test_runtime_robustness.UiTests) ... ok
+test_voice_state_from_worker_is_marshaled_to_main_thread (test_runtime_robustness.UiTests) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 2.090s
+
+OK

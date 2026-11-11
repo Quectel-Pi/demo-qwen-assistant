@@ -1,0 +1,45 @@
+目标设备: transport_id=9
+
+== 1/5 推送 UI 源码 -> /data/rkllm-chat/ui/rkchat/ ==
+[dry-run] adb -t 9 shell 'mkdir -p /data/rkllm-chat/ui/rkchat'
+[dry-run] adb -t 9 push '/home/leox/RKNN-MODEL/deploy/ui/rkchat/rkchat.py' /data/rkllm-chat/ui/rkchat/rkchat.py
+[dry-run] adb -t 9 push '/home/leox/RKNN-MODEL/deploy/ui/rkchat/desktop_session.py' /data/rkllm-chat/ui/rkchat/desktop_session.py
+[dry-run] adb -t 9 push '/home/leox/RKNN-MODEL/deploy/ui/rkchat/client.py' /data/rkllm-chat/ui/rkchat/client.py
+[dry-run] adb -t 9 push '/home/leox/RKNN-MODEL/deploy/ui/rkchat/camera.py' /data/rkllm-chat/ui/rkchat/camera.py
+[dry-run] adb -t 9 push '/home/leox/RKNN-MODEL/deploy/ui/rkchat/voice.py' /data/rkllm-chat/ui/rkchat/voice.py
+[dry-run] adb -t 9 push '/home/leox/RKNN-MODEL/deploy/ui/rkchat/vkbd.py' /data/rkllm-chat/ui/rkchat/vkbd.py
+[dry-run] adb -t 9 push '/home/leox/RKNN-MODEL/deploy/ui/rkchat/style.css' /data/rkllm-chat/ui/rkchat/style.css
+[dry-run] adb -t 9 push '/home/leox/RKNN-MODEL/deploy/ui/rkchat/run.sh' /data/rkllm-chat/ui/rkchat/run.sh
+[dry-run] adb -t 9 shell 'rm -rf /data/rkllm-chat/ui/rkchat/__pycache__'
+
+== 2/5 推送服务端 -> /data/rkllm-chat/native/ ==
+[dry-run] adb -t 9 push '/home/leox/RKNN-MODEL/deploy/native/rkllm_service.cpp' /data/rkllm-chat/native/rkllm_service.cpp
+[dry-run] adb -t 9 push '/home/leox/RKNN-MODEL/deploy/native/rkllm_service.h' /data/rkllm-chat/native/rkllm_service.h
+[dry-run] adb -t 9 push '/home/leox/RKNN-MODEL/deploy/native/rkllm.h' /data/rkllm-chat/native/rkllm.h
+[dry-run] adb -t 9 push '/home/leox/RKNN-MODEL/deploy/native/rknn_api.h' /data/rkllm-chat/native/rknn_api.h
+[dry-run] adb -t 9 push '/home/leox/RKNN-MODEL/deploy/native/stb_image.h' /data/rkllm-chat/native/stb_image.h
+   （跳过 rkllm-service 二进制；需要更新请加 --build-native）
+[dry-run] adb -t 9 shell 'mkdir -p /data/voice-vision'
+[dry-run] adb -t 9 push '/home/leox/RKNN-MODEL/deploy/voice-vision/talk.py' /data/voice-vision/talk.py
+
+== 3/5 推送辅助脚本 -> /data/rkllm_qwen35/ ==
+[dry-run] adb -t 9 shell 'mkdir -p /data/rkllm_qwen35'
+[dry-run] adb -t 9 push '/home/leox/RKNN-MODEL/deploy/qwen35/chat.sh' /data/rkllm_qwen35/chat.sh
+[dry-run] adb -t 9 shell 'chmod +x /data/rkllm_qwen35/chat.sh'
+[dry-run] adb -t 9 push '/home/leox/RKNN-MODEL/deploy/qwen35/run.sh' /data/rkllm_qwen35/run.sh
+[dry-run] adb -t 9 shell 'chmod +x /data/rkllm_qwen35/run.sh'
+[dry-run] adb -t 9 push '/home/leox/RKNN-MODEL/deploy/qwen35/bench.sh' /data/rkllm_qwen35/bench.sh
+[dry-run] adb -t 9 shell 'chmod +x /data/rkllm_qwen35/bench.sh'
+[dry-run] adb -t 9 push '/home/leox/RKNN-MODEL/deploy/qwen35/stress.sh' /data/rkllm_qwen35/stress.sh
+[dry-run] adb -t 9 shell 'chmod +x /data/rkllm_qwen35/stress.sh'
+[dry-run] adb -t 9 push '/home/leox/RKNN-MODEL/deploy/qwen35/chat.py' /data/rkllm_qwen35/chat.py
+[dry-run] adb -t 9 shell 'chmod +x /data/rkllm_qwen35/chat.py'
+
+== 4/5 推送 systemd unit ==
+[dry-run] adb -t 9 push '/home/leox/RKNN-MODEL/deploy/rkllm-chat.service' /etc/systemd/system/rkllm-chat.service
+[dry-run] adb -t 9 shell 'systemctl daemon-reload'
+
+== 5/5 重启推理服务 ==
+[dry-run] adb -t 9 shell 'systemctl enable rkllm-chat 2>/dev/null; systemctl restart rkllm-chat'
+
+dry-run 结束，未改动设备。

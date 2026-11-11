@@ -1,0 +1,39 @@
+== 1/4 venv ==
+== 2/4 torch 2.6.0+cpu ==
+== 3/4 deps ==
+== 4/4 rkllm-toolkit (--no-deps, 依赖已装) ==
+Processing ./rknn-llm/rkllm-toolkit/packages/rkllm_toolkit-1.3.1-cp310-cp310-linux_x86_64.whl
+Installing collected packages: rkllm-toolkit
+Successfully installed rkllm-toolkit-1.3.1
+== verify ==
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+  File "/home/leox/RKNN-MODEL/.venv310/lib/python3.10/site-packages/rkllm/__init__.py", line 1, in <module>
+    from rkllm import api
+  File "/home/leox/RKNN-MODEL/.venv310/lib/python3.10/site-packages/rkllm/api/__init__.py", line 1, in <module>
+    from rkllm.api.rkllm import RKLLM
+  File "/home/leox/RKNN-MODEL/.venv310/lib/python3.10/site-packages/rkllm/api/rkllm.py", line 1, in <module>
+    from rkllm.api.rkllm_base import RKLLMBase
+  File "rkllm/api/rkllm_base.py", line 1, in init rkllm.api.rkllm_base
+  File "rkllm/base/quantizer.py", line 14, in init rkllm.base.quantizer
+  File "/home/leox/RKNN-MODEL/.venv310/lib/python3.10/site-packages/transformers/models/llama/modeling_llama.py", line 30, in <module>
+    from ...modeling_layers import (
+  File "/home/leox/RKNN-MODEL/.venv310/lib/python3.10/site-packages/transformers/modeling_layers.py", line 27, in <module>
+    from .processing_utils import Unpack
+  File "/home/leox/RKNN-MODEL/.venv310/lib/python3.10/site-packages/transformers/processing_utils.py", line 79, in <module>
+    from .modeling_utils import PreTrainedAudioTokenizerBase
+  File "/home/leox/RKNN-MODEL/.venv310/lib/python3.10/site-packages/transformers/modeling_utils.py", line 69, in <module>
+    from .integrations.finegrained_fp8 import ALL_FP8_EXPERTS_FUNCTIONS
+  File "/home/leox/RKNN-MODEL/.venv310/lib/python3.10/site-packages/transformers/integrations/finegrained_fp8.py", line 30, in <module>
+    from .moe import ExpertsInterface, use_experts_implementation
+  File "/home/leox/RKNN-MODEL/.venv310/lib/python3.10/site-packages/transformers/integrations/moe.py", line 250, in <module>
+    torch.library.custom_op("transformers::grouped_mm_fallback", _grouped_mm_fallback, mutates_args=())
+  File "/home/leox/RKNN-MODEL/.venv310/lib/python3.10/site-packages/torch/_library/custom_ops.py", line 142, in custom_op
+    return inner(fn)
+  File "/home/leox/RKNN-MODEL/.venv310/lib/python3.10/site-packages/torch/_library/custom_ops.py", line 119, in inner
+    schema_str = torch._custom_op.impl.infer_schema(fn, mutates_args)
+  File "/home/leox/RKNN-MODEL/.venv310/lib/python3.10/site-packages/torch/_library/infer_schema.py", line 42, in infer_schema
+    error_fn(
+  File "/home/leox/RKNN-MODEL/.venv310/lib/python3.10/site-packages/torch/_library/infer_schema.py", line 21, in error_fn
+    raise ValueError(
+ValueError: infer_schema(func): Parameter input has unsupported type torch.Tensor. The valid types are: dict_keys([<class 'torch.Tensor'>, typing.Optional[torch.Tensor], typing.Sequence[torch.Tensor], typing.List[torch.Tensor], typing.Sequence[typing.Optional[torch.Tensor]], typing.List[typing.Optional[torch.Tensor]], <class 'int'>, typing.Optional[int], typing.Sequence[int], typing.List[int], typing.Optional[typing.Sequence[int]], typing.Optional[typing.List[int]], <class 'float'>, typing.Optional[float], typing.Sequence[float], typing.List[float], typing.Optional[typing.Sequence[float]], typing.Optional[typing.List[float]], <class 'bool'>, typing.Optional[bool], typing.Sequence[bool], typing.List[bool], typing.Optional[typing.Sequence[bool]], typing.Optional[typing.List[bool]], <class 'str'>, typing.Optional[str], typing.Union[int, float, bool], typing.Union[int, float, bool, NoneType], typing.Sequence[typing.Union[int, float, bool]], typing.List[typing.Union[int, float, bool]], <class 'torch.dtype'>, typing.Optional[torch.dtype], <class 'torch.device'>, typing.Optional[torch.device]]). Got func with signature (input: 'torch.Tensor', weight: 'torch.Tensor', offs: 'torch.Tensor') -> 'torch.Tensor')

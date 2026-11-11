@@ -1,0 +1,64 @@
+{
+  "records": [
+    {
+      "phase": "usb_warm",
+      "id": 0,
+      "device": "plughw:CARD=U1080P,DEV=0",
+      "gains": [
+        11,
+        12
+      ],
+      "reference": "你好，这是一段语音测试，一二三。",
+      "transcription": "你好这是一顿语语测试一二三",
+      "samples": 72192,
+      "rms": 0.028781427070498466,
+      "peak": 0.355712890625,
+      "clipped_fraction": 0.0,
+      "errors": 2,
+      "reference_chars": 13,
+      "playback_seconds": 3.1635236750007607,
+      "playback_error": null,
+      "asr_seconds": 0.8605856750000385
+    },
+    {
+      "phase": "usb_warm",
+      "id": 1,
+      "device": "plughw:CARD=U1080P,DEV=0",
+      "gains": [
+        11,
+        12
+      ],
+      "reference": "今天天气很好，我们一起去散步。",
+      "transcription": "今天天气很好我们一起去散步",
+      "samples": 72192,
+      "rms": 0.03338589891791344,
+      "peak": 0.334320068359375,
+      "clipped_fraction": 0.0,
+      "errors": 0,
+      "reference_chars": 13,
+      "playback_seconds": 2.9130229799993685,
+      "playback_error": null,
+      "asr_seconds": 0.8536198369984049
+    },
+    {
+      "phase": "usb_warm",
+      "id": 2,
+      "device": "plughw:CARD=U1080P,DEV=0",
+      "gains": [
+        11,
+        12
+      ],
+      "reference": "请告诉我，桌面上的杯子是什么颜色。",
+      "transcription": "请告诉我桌面上的杯子是什么颜色",
+      "samples": 80384,
+      "rms": 0.026811564341187477,
+      "peak": 0.48504638671875,
+      "clipped_fraction": 0.0,
+      "errors": 0,
+      "reference_chars": 15,
+      "playback_seconds": 3.3505824519997986,
+      "playback_error": null,
+      "asr_seconds": 0.9498778300003323
+    }
+  ]
+}

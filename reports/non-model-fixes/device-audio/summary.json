@@ -1,0 +1,118 @@
+{
+  "records": [
+    {
+      "phase": "before",
+      "id": 0,
+      "gains": [
+        11,
+        12
+      ],
+      "reference": "你好，这是一段语音测试，一二三。",
+      "transcription": "这个是谁",
+      "samples": 84480,
+      "rms": 0.16197586059570312,
+      "peak": 1.0,
+      "clipped_fraction": 0.021803977272727273,
+      "errors": 12,
+      "reference_chars": 13,
+      "playback_seconds": 4.206334442002117,
+      "playback_error": null,
+      "asr_seconds": 0.9937271419985336
+    },
+    {
+      "phase": "before",
+      "id": 1,
+      "gains": [
+        11,
+        12
+      ],
+      "reference": "今天天气很好，我们一起去散步。",
+      "transcription": "今天天气我们一起去散步",
+      "samples": 78336,
+      "rms": 0.1670019030570984,
+      "peak": 1.0,
+      "clipped_fraction": 0.02373110702614379,
+      "errors": 2,
+      "reference_chars": 13,
+      "playback_seconds": 3.830456902000151,
+      "playback_error": null,
+      "asr_seconds": 0.929833983998833
+    },
+    {
+      "phase": "before",
+      "id": 2,
+      "gains": [
+        11,
+        12
+      ],
+      "reference": "请告诉我，桌面上的杯子是什么颜色。",
+      "transcription": "你不玩那的红者必",
+      "samples": 88064,
+      "rms": 0.1588471680879593,
+      "peak": 1.0,
+      "clipped_fraction": 0.02099609375,
+      "errors": 14,
+      "reference_chars": 15,
+      "playback_seconds": 4.5175802190024115,
+      "playback_error": null,
+      "asr_seconds": 1.0277479750002385
+    },
+    {
+      "phase": "minus_6db",
+      "id": 0,
+      "gains": [
+        9,
+        10
+      ],
+      "reference": "你好，这是一段语音测试，一二三。",
+      "transcription": "感觉是不是一把猫跟狗带工资了我哇",
+      "samples": 84480,
+      "rms": 0.11580968648195267,
+      "peak": 0.999969482421875,
+      "clipped_fraction": 0.006534090909090909,
+      "errors": 14,
+      "reference_chars": 13,
+      "playback_seconds": 4.205569609999657,
+      "playback_error": null,
+      "asr_seconds": 0.9846440640030778
+    },
+    {
+      "phase": "minus_6db",
+      "id": 1,
+      "gains": [
+        9,
+        10
+      ],
+      "reference": "今天天气很好，我们一起去散步。",
+      "transcription": "就去就就在这走廊我看不到",
+      "samples": 78336,
+      "rms": 0.12084605544805527,
+      "peak": 0.999969482421875,
+      "clipped_fraction": 0.0070593341503267975,
+      "errors": 13,
+      "reference_chars": 13,
+      "playback_seconds": 3.8314077959985298,
+      "playback_error": null,
+      "asr_seconds": 0.9268709030002356
+    },
+    {
+      "phase": "minus_6db",
+      "id": 2,
+      "gains": [
+        9,
+        10
+      ],
+      "reference": "请告诉我，桌面上的杯子是什么颜色。",
+      "transcription": "对啊讲话咪笑你什么",
+      "samples": 88064,
+      "rms": 0.1138439029455185,
+      "peak": 0.999969482421875,
+      "clipped_fraction": 0.006256813226744186,
+      "errors": 13,
+      "reference_chars": 15,
+      "playback_seconds": 4.518994067002495,
+      "playback_error": null,
+      "asr_seconds": 1.0263032650000241
+    }
+  ]
+}
